@@ -1,0 +1,10 @@
+-include: ${workspace}/cnf/includes/idempiere.bnd
+
+-buildpath: \
+	${junit},\
+	${mockito},\
+	au.org.greekwelfaresa.idempiere.test.common;version=snapshot,\
+	osgi.annotation;version=latest,\
+	org.osgi.test.common;version='0.10.0'
+
+Import-Package: *

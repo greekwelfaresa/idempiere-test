@@ -1,0 +1,16 @@
+-include: ${workspace}/cnf/includes/idempiere.bnd
+
+-buildpath: \
+	${junit},\
+	${mockito},\
+	org.adempiere.base;version=latest,\
+	javax.annotation-api;version=latest,\
+	osgi.annotation;version=latest,\
+	au.org.greekwelfaresa.idempiere.test.common;version=snapshot
+
+Export-Package: au.org.greekwelfaresa.idempiere.test.assertj;version=1.0.0,au.org.greekwelfaresa.idempiere.test.assertj.*
+
+Import-Package: \
+	${compiere.importpackage},\
+	org.assertj.core.error,\
+	*

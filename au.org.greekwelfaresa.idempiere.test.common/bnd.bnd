@@ -1,0 +1,14 @@
+-include: ${workspace}/cnf/includes/idempiere.bnd
+
+-buildpath: \
+	${junit},\
+	${mockito},\
+	org.adempiere.base;version=latest,\
+	javax.annotation-api;version=latest,\
+	osgi.annotation;version=latest,\
+	org.osgi.test.common;version=latest
+	
+Import-Package: \
+	${compiere.importpackage},\
+	${adempiere.importpackage},\
+	*

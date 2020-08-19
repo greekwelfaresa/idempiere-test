@@ -1,0 +1,39 @@
+releaserepo:            ${workspace}/dist/bundles/
+mavencentral:           https://repo.maven.apache.org/maven2
+
+-plugin.0.Main:\
+    aQute.bnd.repository.maven.provider.MavenBndRepository;\
+        name="Maven Central";\
+        releaseUrl="${mavencentral}";\
+        index="${.}/central.mvn";\
+        readOnly=true,\
+    aQute.bnd.repository.maven.provider.MavenBndRepository;\
+        name="OSGi Snapshots";\
+        snapshotUrl="https://oss.sonatype.org/content/repositories/snapshots/";\
+        index="${.}/osgi-snapshots.mvn";\
+        readOnly=true,\
+    aQute.bnd.repository.p2.provider.P2Repository; \
+        url = "https://raw.githubusercontent.com/idempiere/binary.file/master/p2.idempiere.core/idempiere-6.2-201905030208"; \
+        name = "iDempiere 6.2",\
+    aQute.bnd.repository.p2.provider.P2Repository; \
+        url = "https://raw.githubusercontent.com/idempiere/binary.file/master/p2.maven/maven-p2-R20190411"; \
+        name = "iDempiere 6.2 Maven-P2",\
+    aQute.bnd.repository.maven.provider.MavenBndRepository;\
+        name="Local";\
+        noupdateOnRelease=true,\
+    aQute.bnd.deployer.repository.LocalIndexedRepo; \
+        name = Release; \
+        pretty = true; \
+        local = ${releaserepo}
+        
+-plugin.9.Baseline:\
+    aQute.bnd.repository.maven.provider.MavenBndRepository;\
+        name="Baseline";\
+        releaseUrl="${mavencentral}";\
+        index="${.}/baseline.mvn";\
+        readOnly=true
+
+-buildrepo: Local
+-releaserepo: Release
+
+-baselinerepo: Baseline

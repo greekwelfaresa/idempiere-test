@@ -1,0 +1,10 @@
+# Set javac settings from JDT prefs
+-include: ${workspace}/cnf/includes/jdt.bnd
+
+-nobundles: true
+
+-dependson: au.org.greekwelfaresa.idempiere.test.assertj,\
+	au.org.greekwelfaresa.idempiere.test.common,\
+	au.org.greekwelfaresa.idempiere.test.generator,\
+	au.org.greekwelfaresa.idempiere.test.junit4,\
+	au.org.greekwelfaresa.idempiere.test.junit5

@@ -90,10 +90,6 @@ public class IDModelAssertions {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.a_asset_split.A_Asset_SplitAssert(a);
 	}
 
-	public static au.org.greekwelfaresa.idempiere.test.assertj.a_asset_spread.A_Asset_SpreadAssert assertThat(org.compiere.model.X_A_Asset_Spread a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.a_asset_spread.A_Asset_SpreadAssert(a);
-	}
-
 	public static au.org.greekwelfaresa.idempiere.test.assertj.a_asset_transfer.A_Asset_TransferAssert assertThat(org.compiere.model.X_A_Asset_Transfer a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.a_asset_transfer.A_Asset_TransferAssert(a);
 	}
@@ -1714,46 +1710,6 @@ public class IDModelAssertions {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.c_year.C_YearAssert(a);
 	}
 
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accesscontainer.CM_AccessContainerAssert assertThat(org.compiere.model.X_CM_AccessContainer a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accesscontainer.CM_AccessContainerAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistbpgroup.CM_AccessListBPGroupAssert assertThat(org.compiere.model.X_CM_AccessListBPGroup a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistbpgroup.CM_AccessListBPGroupAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistrole.CM_AccessListRoleAssert assertThat(org.compiere.model.X_CM_AccessListRole a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistrole.CM_AccessListRoleAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accessmedia.CM_AccessMediaAssert assertThat(org.compiere.model.X_CM_AccessMedia a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accessmedia.CM_AccessMediaAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accessnewschannel.CM_AccessNewsChannelAssert assertThat(org.compiere.model.X_CM_AccessNewsChannel a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accessnewschannel.CM_AccessNewsChannelAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accessprofile.CM_AccessProfileAssert assertThat(org.compiere.model.X_CM_AccessProfile a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accessprofile.CM_AccessProfileAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_accessstage.CM_AccessStageAssert assertThat(org.compiere.model.X_CM_AccessStage a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_accessstage.CM_AccessStageAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_ad.CM_AdAssert assertThat(org.compiere.model.X_CM_Ad a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_ad.CM_AdAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_ad_cat.CM_Ad_CatAssert assertThat(org.compiere.model.X_CM_Ad_Cat a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_ad_cat.CM_Ad_CatAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_broadcastserver.CM_BroadcastServerAssert assertThat(org.compiere.model.X_CM_BroadcastServer a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_broadcastserver.CM_BroadcastServerAssert(a);
-	}
-
 	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_chat.CM_ChatAssert assertThat(org.compiere.model.X_CM_Chat a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_chat.CM_ChatAssert(a);
 	}
@@ -1772,82 +1728,6 @@ public class IDModelAssertions {
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_chatupdate.CM_ChatUpdateAssert assertThat(org.compiere.model.X_CM_ChatUpdate a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_chatupdate.CM_ChatUpdateAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_container.CM_ContainerAssert assertThat(org.compiere.model.X_CM_Container a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_container.CM_ContainerAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_container_element.CM_Container_ElementAssert assertThat(org.compiere.model.X_CM_Container_Element a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_container_element.CM_Container_ElementAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_container_url.CM_Container_URLAssert assertThat(org.compiere.model.X_CM_Container_URL a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_container_url.CM_Container_URLAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_containerttable.CM_ContainerTTableAssert assertThat(org.compiere.model.X_CM_ContainerTTable a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_containerttable.CM_ContainerTTableAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage.CM_CStageAssert assertThat(org.compiere.model.X_CM_CStage a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage.CM_CStageAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage_element.CM_CStage_ElementAssert assertThat(org.compiere.model.X_CM_CStage_Element a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage_element.CM_CStage_ElementAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_cstagettable.CM_CStageTTableAssert assertThat(org.compiere.model.X_CM_CStageTTable a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_cstagettable.CM_CStageTTableAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_media.CM_MediaAssert assertThat(org.compiere.model.X_CM_Media a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_media.CM_MediaAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_media_server.CM_Media_ServerAssert assertThat(org.compiere.model.X_CM_Media_Server a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_media_server.CM_Media_ServerAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_mediadeploy.CM_MediaDeployAssert assertThat(org.compiere.model.X_CM_MediaDeploy a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_mediadeploy.CM_MediaDeployAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_newschannel.CM_NewsChannelAssert assertThat(org.compiere.model.X_CM_NewsChannel a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_newschannel.CM_NewsChannelAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_newsitem.CM_NewsItemAssert assertThat(org.compiere.model.X_CM_NewsItem a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_newsitem.CM_NewsItemAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_template.CM_TemplateAssert assertThat(org.compiere.model.X_CM_Template a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_template.CM_TemplateAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_template_ad_cat.CM_Template_Ad_CatAssert assertThat(org.compiere.model.X_CM_Template_Ad_Cat a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_template_ad_cat.CM_Template_Ad_CatAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_templatetable.CM_TemplateTableAssert assertThat(org.compiere.model.X_CM_TemplateTable a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_templatetable.CM_TemplateTableAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_webaccesslog.CM_WebAccessLogAssert assertThat(org.compiere.model.X_CM_WebAccessLog a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_webaccesslog.CM_WebAccessLogAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject.CM_WebProjectAssert assertThat(org.compiere.model.X_CM_WebProject a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject.CM_WebProjectAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject_domain.CM_WebProject_DomainAssert assertThat(org.compiere.model.X_CM_WebProject_Domain a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject_domain.CM_WebProject_DomainAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.cm_wikitoken.CM_WikiTokenAssert assertThat(org.compiere.model.X_CM_WikiToken a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.cm_wikitoken.CM_WikiTokenAssert(a);
 	}
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.fact_acct.Fact_AcctAssert assertThat(org.compiere.model.X_Fact_Acct a) {
@@ -1976,58 +1856,6 @@ public class IDModelAssertions {
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.i_reportline.I_ReportLineAssert assertThat(org.compiere.model.X_I_ReportLine a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.i_reportline.I_ReportLineAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_category.K_CategoryAssert assertThat(org.compiere.model.X_K_Category a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_category.K_CategoryAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_categoryvalue.K_CategoryValueAssert assertThat(org.compiere.model.X_K_CategoryValue a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_categoryvalue.K_CategoryValueAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_comment.K_CommentAssert assertThat(org.compiere.model.X_K_Comment a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_comment.K_CommentAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_entry.K_EntryAssert assertThat(org.compiere.model.X_K_Entry a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_entry.K_EntryAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_entrycategory.K_EntryCategoryAssert assertThat(org.compiere.model.X_K_EntryCategory a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_entrycategory.K_EntryCategoryAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_entryrelated.K_EntryRelatedAssert assertThat(org.compiere.model.X_K_EntryRelated a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_entryrelated.K_EntryRelatedAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_index.K_IndexAssert assertThat(org.compiere.model.X_K_Index a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_index.K_IndexAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_indexlog.K_IndexLogAssert assertThat(org.compiere.model.X_K_IndexLog a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_indexlog.K_IndexLogAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_indexstop.K_IndexStopAssert assertThat(org.compiere.model.X_K_IndexStop a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_indexstop.K_IndexStopAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_source.K_SourceAssert assertThat(org.compiere.model.X_K_Source a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_source.K_SourceAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_synonym.K_SynonymAssert assertThat(org.compiere.model.X_K_Synonym a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_synonym.K_SynonymAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_topic.K_TopicAssert assertThat(org.compiere.model.X_K_Topic a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_topic.K_TopicAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.k_type.K_TypeAssert assertThat(org.compiere.model.X_K_Type a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.k_type.K_TypeAssert(a);
 	}
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.m_attribute.M_AttributeAssert assertThat(org.compiere.model.X_M_Attribute a) {
@@ -2820,42 +2648,6 @@ public class IDModelAssertions {
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.u_webmenu.U_WebMenuAssert assertThat(org.compiere.model.X_U_WebMenu a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.u_webmenu.U_WebMenuAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_advertisement.W_AdvertisementAssert assertThat(org.compiere.model.X_W_Advertisement a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_advertisement.W_AdvertisementAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_basket.W_BasketAssert assertThat(org.compiere.model.X_W_Basket a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_basket.W_BasketAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_basketline.W_BasketLineAssert assertThat(org.compiere.model.X_W_BasketLine a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_basketline.W_BasketLineAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_click.W_ClickAssert assertThat(org.compiere.model.X_W_Click a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_click.W_ClickAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_clickcount.W_ClickCountAssert assertThat(org.compiere.model.X_W_ClickCount a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_clickcount.W_ClickCountAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_counter.W_CounterAssert assertThat(org.compiere.model.X_W_Counter a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_counter.W_CounterAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_countercount.W_CounterCountAssert assertThat(org.compiere.model.X_W_CounterCount a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_countercount.W_CounterCountAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_mailmsg.W_MailMsgAssert assertThat(org.compiere.model.X_W_MailMsg a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_mailmsg.W_MailMsgAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.w_store.W_StoreAssert assertThat(org.compiere.model.X_W_Store a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.w_store.W_StoreAssert(a);
 	}
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservice.WS_WebServiceAssert assertThat(org.compiere.model.X_WS_WebService a) {

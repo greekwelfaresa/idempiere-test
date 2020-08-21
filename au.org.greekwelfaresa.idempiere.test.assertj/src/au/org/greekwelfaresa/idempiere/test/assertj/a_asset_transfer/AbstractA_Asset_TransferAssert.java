@@ -32,17 +32,6 @@ public abstract class AbstractA_Asset_TransferAssert<SELF extends AbstractA_Asse
 		return myself;
 	}
 
-	public SELF hasA_Accumdepreciation_Acct_New(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Accumdepreciation_Acct_New();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Accumdepreciation_Acct_New: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Accumdepreciation_Acct_Str(String expected)
 	{
 		isNotNull();
@@ -90,17 +79,6 @@ public abstract class AbstractA_Asset_TransferAssert<SELF extends AbstractA_Asse
 		int actualField = actual.getA_Asset_Acct_ID();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Asset_Acct_ID: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Asset_Acct_New(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Asset_Acct_New();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Asset_Acct_New: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;
@@ -183,17 +161,6 @@ public abstract class AbstractA_Asset_TransferAssert<SELF extends AbstractA_Asse
 		return myself;
 	}
 
-	public SELF hasA_Depreciation_Acct_New(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Depreciation_Acct_New();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Depreciation_Acct_New: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Depreciation_Acct_Str(String expected)
 	{
 		isNotNull();
@@ -238,17 +205,6 @@ public abstract class AbstractA_Asset_TransferAssert<SELF extends AbstractA_Asse
 		return myself;
 	}
 
-	public SELF hasA_Disposal_Loss_New(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Disposal_Loss_New();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Loss_New: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Disposal_Loss_New_Acct(int expected)
 	{
 		isNotNull();
@@ -288,17 +244,6 @@ public abstract class AbstractA_Asset_TransferAssert<SELF extends AbstractA_Asse
 		int actualField = actual.getA_Disposal_Revenue_Acct();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Revenue_Acct: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Disposal_Revenue_New(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Disposal_Revenue_New();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Revenue_New: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;

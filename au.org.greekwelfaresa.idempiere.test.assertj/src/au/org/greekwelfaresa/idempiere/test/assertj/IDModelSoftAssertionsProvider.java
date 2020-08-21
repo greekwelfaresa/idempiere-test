@@ -2,6 +2,7 @@
 package au.org.greekwelfaresa.idempiere.test.assertj;
 
 import javax.annotation.Generated;
+
 import org.assertj.core.api.SoftAssertionsProvider;
 /** Generated soft assertions entry point
  *  @author idempiere-test model assertion generator 
@@ -87,10 +88,6 @@ public interface IDModelSoftAssertionsProvider extends SoftAssertionsProvider {
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.a_asset_split.A_Asset_SplitAssert assertThat(org.compiere.model.X_A_Asset_Split a) {
 		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.a_asset_split.A_Asset_SplitAssert.class, org.compiere.model.X_A_Asset_Split.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.a_asset_spread.A_Asset_SpreadAssert assertThat(org.compiere.model.X_A_Asset_Spread a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.a_asset_spread.A_Asset_SpreadAssert.class, org.compiere.model.X_A_Asset_Spread.class, a);
 	}
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.a_asset_transfer.A_Asset_TransferAssert assertThat(org.compiere.model.X_A_Asset_Transfer a) {
@@ -1713,46 +1710,6 @@ public interface IDModelSoftAssertionsProvider extends SoftAssertionsProvider {
 		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.c_year.C_YearAssert.class, org.compiere.model.X_C_Year.class, a);
 	}
 
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accesscontainer.CM_AccessContainerAssert assertThat(org.compiere.model.X_CM_AccessContainer a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accesscontainer.CM_AccessContainerAssert.class, org.compiere.model.X_CM_AccessContainer.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistbpgroup.CM_AccessListBPGroupAssert assertThat(org.compiere.model.X_CM_AccessListBPGroup a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistbpgroup.CM_AccessListBPGroupAssert.class, org.compiere.model.X_CM_AccessListBPGroup.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistrole.CM_AccessListRoleAssert assertThat(org.compiere.model.X_CM_AccessListRole a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accesslistrole.CM_AccessListRoleAssert.class, org.compiere.model.X_CM_AccessListRole.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accessmedia.CM_AccessMediaAssert assertThat(org.compiere.model.X_CM_AccessMedia a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accessmedia.CM_AccessMediaAssert.class, org.compiere.model.X_CM_AccessMedia.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accessnewschannel.CM_AccessNewsChannelAssert assertThat(org.compiere.model.X_CM_AccessNewsChannel a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accessnewschannel.CM_AccessNewsChannelAssert.class, org.compiere.model.X_CM_AccessNewsChannel.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accessprofile.CM_AccessProfileAssert assertThat(org.compiere.model.X_CM_AccessProfile a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accessprofile.CM_AccessProfileAssert.class, org.compiere.model.X_CM_AccessProfile.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_accessstage.CM_AccessStageAssert assertThat(org.compiere.model.X_CM_AccessStage a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_accessstage.CM_AccessStageAssert.class, org.compiere.model.X_CM_AccessStage.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_ad.CM_AdAssert assertThat(org.compiere.model.X_CM_Ad a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_ad.CM_AdAssert.class, org.compiere.model.X_CM_Ad.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_ad_cat.CM_Ad_CatAssert assertThat(org.compiere.model.X_CM_Ad_Cat a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_ad_cat.CM_Ad_CatAssert.class, org.compiere.model.X_CM_Ad_Cat.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_broadcastserver.CM_BroadcastServerAssert assertThat(org.compiere.model.X_CM_BroadcastServer a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_broadcastserver.CM_BroadcastServerAssert.class, org.compiere.model.X_CM_BroadcastServer.class, a);
-	}
-
 	default au.org.greekwelfaresa.idempiere.test.assertj.cm_chat.CM_ChatAssert assertThat(org.compiere.model.X_CM_Chat a) {
 		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_chat.CM_ChatAssert.class, org.compiere.model.X_CM_Chat.class, a);
 	}
@@ -1771,82 +1728,6 @@ public interface IDModelSoftAssertionsProvider extends SoftAssertionsProvider {
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.cm_chatupdate.CM_ChatUpdateAssert assertThat(org.compiere.model.X_CM_ChatUpdate a) {
 		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_chatupdate.CM_ChatUpdateAssert.class, org.compiere.model.X_CM_ChatUpdate.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_container.CM_ContainerAssert assertThat(org.compiere.model.X_CM_Container a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_container.CM_ContainerAssert.class, org.compiere.model.X_CM_Container.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_container_element.CM_Container_ElementAssert assertThat(org.compiere.model.X_CM_Container_Element a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_container_element.CM_Container_ElementAssert.class, org.compiere.model.X_CM_Container_Element.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_container_url.CM_Container_URLAssert assertThat(org.compiere.model.X_CM_Container_URL a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_container_url.CM_Container_URLAssert.class, org.compiere.model.X_CM_Container_URL.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_containerttable.CM_ContainerTTableAssert assertThat(org.compiere.model.X_CM_ContainerTTable a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_containerttable.CM_ContainerTTableAssert.class, org.compiere.model.X_CM_ContainerTTable.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage.CM_CStageAssert assertThat(org.compiere.model.X_CM_CStage a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage.CM_CStageAssert.class, org.compiere.model.X_CM_CStage.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage_element.CM_CStage_ElementAssert assertThat(org.compiere.model.X_CM_CStage_Element a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_cstage_element.CM_CStage_ElementAssert.class, org.compiere.model.X_CM_CStage_Element.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_cstagettable.CM_CStageTTableAssert assertThat(org.compiere.model.X_CM_CStageTTable a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_cstagettable.CM_CStageTTableAssert.class, org.compiere.model.X_CM_CStageTTable.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_media.CM_MediaAssert assertThat(org.compiere.model.X_CM_Media a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_media.CM_MediaAssert.class, org.compiere.model.X_CM_Media.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_media_server.CM_Media_ServerAssert assertThat(org.compiere.model.X_CM_Media_Server a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_media_server.CM_Media_ServerAssert.class, org.compiere.model.X_CM_Media_Server.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_mediadeploy.CM_MediaDeployAssert assertThat(org.compiere.model.X_CM_MediaDeploy a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_mediadeploy.CM_MediaDeployAssert.class, org.compiere.model.X_CM_MediaDeploy.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_newschannel.CM_NewsChannelAssert assertThat(org.compiere.model.X_CM_NewsChannel a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_newschannel.CM_NewsChannelAssert.class, org.compiere.model.X_CM_NewsChannel.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_newsitem.CM_NewsItemAssert assertThat(org.compiere.model.X_CM_NewsItem a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_newsitem.CM_NewsItemAssert.class, org.compiere.model.X_CM_NewsItem.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_template.CM_TemplateAssert assertThat(org.compiere.model.X_CM_Template a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_template.CM_TemplateAssert.class, org.compiere.model.X_CM_Template.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_template_ad_cat.CM_Template_Ad_CatAssert assertThat(org.compiere.model.X_CM_Template_Ad_Cat a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_template_ad_cat.CM_Template_Ad_CatAssert.class, org.compiere.model.X_CM_Template_Ad_Cat.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_templatetable.CM_TemplateTableAssert assertThat(org.compiere.model.X_CM_TemplateTable a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_templatetable.CM_TemplateTableAssert.class, org.compiere.model.X_CM_TemplateTable.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_webaccesslog.CM_WebAccessLogAssert assertThat(org.compiere.model.X_CM_WebAccessLog a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_webaccesslog.CM_WebAccessLogAssert.class, org.compiere.model.X_CM_WebAccessLog.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject.CM_WebProjectAssert assertThat(org.compiere.model.X_CM_WebProject a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject.CM_WebProjectAssert.class, org.compiere.model.X_CM_WebProject.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject_domain.CM_WebProject_DomainAssert assertThat(org.compiere.model.X_CM_WebProject_Domain a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_webproject_domain.CM_WebProject_DomainAssert.class, org.compiere.model.X_CM_WebProject_Domain.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.cm_wikitoken.CM_WikiTokenAssert assertThat(org.compiere.model.X_CM_WikiToken a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.cm_wikitoken.CM_WikiTokenAssert.class, org.compiere.model.X_CM_WikiToken.class, a);
 	}
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.fact_acct.Fact_AcctAssert assertThat(org.compiere.model.X_Fact_Acct a) {
@@ -1975,58 +1856,6 @@ public interface IDModelSoftAssertionsProvider extends SoftAssertionsProvider {
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.i_reportline.I_ReportLineAssert assertThat(org.compiere.model.X_I_ReportLine a) {
 		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.i_reportline.I_ReportLineAssert.class, org.compiere.model.X_I_ReportLine.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_category.K_CategoryAssert assertThat(org.compiere.model.X_K_Category a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_category.K_CategoryAssert.class, org.compiere.model.X_K_Category.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_categoryvalue.K_CategoryValueAssert assertThat(org.compiere.model.X_K_CategoryValue a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_categoryvalue.K_CategoryValueAssert.class, org.compiere.model.X_K_CategoryValue.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_comment.K_CommentAssert assertThat(org.compiere.model.X_K_Comment a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_comment.K_CommentAssert.class, org.compiere.model.X_K_Comment.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_entry.K_EntryAssert assertThat(org.compiere.model.X_K_Entry a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_entry.K_EntryAssert.class, org.compiere.model.X_K_Entry.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_entrycategory.K_EntryCategoryAssert assertThat(org.compiere.model.X_K_EntryCategory a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_entrycategory.K_EntryCategoryAssert.class, org.compiere.model.X_K_EntryCategory.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_entryrelated.K_EntryRelatedAssert assertThat(org.compiere.model.X_K_EntryRelated a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_entryrelated.K_EntryRelatedAssert.class, org.compiere.model.X_K_EntryRelated.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_index.K_IndexAssert assertThat(org.compiere.model.X_K_Index a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_index.K_IndexAssert.class, org.compiere.model.X_K_Index.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_indexlog.K_IndexLogAssert assertThat(org.compiere.model.X_K_IndexLog a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_indexlog.K_IndexLogAssert.class, org.compiere.model.X_K_IndexLog.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_indexstop.K_IndexStopAssert assertThat(org.compiere.model.X_K_IndexStop a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_indexstop.K_IndexStopAssert.class, org.compiere.model.X_K_IndexStop.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_source.K_SourceAssert assertThat(org.compiere.model.X_K_Source a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_source.K_SourceAssert.class, org.compiere.model.X_K_Source.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_synonym.K_SynonymAssert assertThat(org.compiere.model.X_K_Synonym a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_synonym.K_SynonymAssert.class, org.compiere.model.X_K_Synonym.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_topic.K_TopicAssert assertThat(org.compiere.model.X_K_Topic a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_topic.K_TopicAssert.class, org.compiere.model.X_K_Topic.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.k_type.K_TypeAssert assertThat(org.compiere.model.X_K_Type a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.k_type.K_TypeAssert.class, org.compiere.model.X_K_Type.class, a);
 	}
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.m_attribute.M_AttributeAssert assertThat(org.compiere.model.X_M_Attribute a) {
@@ -2819,42 +2648,6 @@ public interface IDModelSoftAssertionsProvider extends SoftAssertionsProvider {
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.u_webmenu.U_WebMenuAssert assertThat(org.compiere.model.X_U_WebMenu a) {
 		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.u_webmenu.U_WebMenuAssert.class, org.compiere.model.X_U_WebMenu.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_advertisement.W_AdvertisementAssert assertThat(org.compiere.model.X_W_Advertisement a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_advertisement.W_AdvertisementAssert.class, org.compiere.model.X_W_Advertisement.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_basket.W_BasketAssert assertThat(org.compiere.model.X_W_Basket a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_basket.W_BasketAssert.class, org.compiere.model.X_W_Basket.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_basketline.W_BasketLineAssert assertThat(org.compiere.model.X_W_BasketLine a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_basketline.W_BasketLineAssert.class, org.compiere.model.X_W_BasketLine.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_click.W_ClickAssert assertThat(org.compiere.model.X_W_Click a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_click.W_ClickAssert.class, org.compiere.model.X_W_Click.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_clickcount.W_ClickCountAssert assertThat(org.compiere.model.X_W_ClickCount a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_clickcount.W_ClickCountAssert.class, org.compiere.model.X_W_ClickCount.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_counter.W_CounterAssert assertThat(org.compiere.model.X_W_Counter a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_counter.W_CounterAssert.class, org.compiere.model.X_W_Counter.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_countercount.W_CounterCountAssert assertThat(org.compiere.model.X_W_CounterCount a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_countercount.W_CounterCountAssert.class, org.compiere.model.X_W_CounterCount.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_mailmsg.W_MailMsgAssert assertThat(org.compiere.model.X_W_MailMsg a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_mailmsg.W_MailMsgAssert.class, org.compiere.model.X_W_MailMsg.class, a);
-	}
-
-	default au.org.greekwelfaresa.idempiere.test.assertj.w_store.W_StoreAssert assertThat(org.compiere.model.X_W_Store a) {
-		return proxy(au.org.greekwelfaresa.idempiere.test.assertj.w_store.W_StoreAssert.class, org.compiere.model.X_W_Store.class, a);
 	}
 
 	default au.org.greekwelfaresa.idempiere.test.assertj.ws_webservice.WS_WebServiceAssert assertThat(org.compiere.model.X_WS_WebService a) {

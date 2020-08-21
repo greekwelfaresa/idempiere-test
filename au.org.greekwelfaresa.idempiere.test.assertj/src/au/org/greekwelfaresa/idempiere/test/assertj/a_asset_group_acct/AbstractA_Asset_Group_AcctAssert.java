@@ -76,34 +76,12 @@ public abstract class AbstractA_Asset_Group_AcctAssert<SELF extends AbstractA_As
 		return myself;
 	}
 
-	public SELF hasA_Asset_Spread_Type(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Asset_Spread_Type();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Asset_Spread_Type: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Depreciation_Acct(int expected)
 	{
 		isNotNull();
 		int actualField = actual.getA_Depreciation_Acct();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Depreciation_Acct: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Depreciation_Calc_Type(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Depreciation_Calc_Type();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Depreciation_Calc_Type: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;
@@ -221,34 +199,12 @@ public abstract class AbstractA_Asset_Group_AcctAssert<SELF extends AbstractA_As
 	}
 
 
-	public SELF hasA_Disposal_Gain(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Disposal_Gain();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Gain: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Disposal_Gain_Acct(int expected)
 	{
 		isNotNull();
 		int actualField = actual.getA_Disposal_Gain_Acct();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Gain_Acct: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Disposal_Loss(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Disposal_Loss();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Loss: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;
@@ -265,45 +221,12 @@ public abstract class AbstractA_Asset_Group_AcctAssert<SELF extends AbstractA_As
 		return myself;
 	}
 
-	public SELF hasA_Disposal_Revenue(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Disposal_Revenue();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Revenue: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Disposal_Revenue_Acct(int expected)
 	{
 		isNotNull();
 		int actualField = actual.getA_Disposal_Revenue_Acct();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Disposal_Revenue_Acct: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Reval_Accumdep_Offset_Cur(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Reval_Accumdep_Offset_Cur();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Reval_Accumdep_Offset_Cur: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Reval_Accumdep_Offset_Prior(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Reval_Accumdep_Offset_Prior();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Reval_Accumdep_Offset_Prior: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;
@@ -342,17 +265,6 @@ public abstract class AbstractA_Asset_Group_AcctAssert<SELF extends AbstractA_As
 		return myself;
 	}
 
-	public SELF hasA_Reval_Cost_Offset(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Reval_Cost_Offset();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Reval_Cost_Offset: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Reval_Cost_Offset_Acct(int expected)
 	{
 		isNotNull();
@@ -364,34 +276,12 @@ public abstract class AbstractA_Asset_Group_AcctAssert<SELF extends AbstractA_As
 		return myself;
 	}
 
-	public SELF hasA_Reval_Cost_Offset_Prior(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Reval_Cost_Offset_Prior();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Reval_Cost_Offset_Prior: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasA_Reval_Cost_Offset_Prior_Acct(int expected)
 	{
 		isNotNull();
 		int actualField = actual.getA_Reval_Cost_Offset_Prior_Acct();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Reval_Cost_Offset_Prior_Acct: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Reval_Depexp_Offset(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Reval_Depexp_Offset();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Reval_Depexp_Offset: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;
@@ -422,28 +312,6 @@ public abstract class AbstractA_Asset_Group_AcctAssert<SELF extends AbstractA_As
 		int actualField = actual.getC_AcctSchema_ID();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have C_AcctSchema_ID: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasConventionType(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getConventionType();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have ConventionType: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasDepreciationType(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getDepreciationType();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have DepreciationType: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;

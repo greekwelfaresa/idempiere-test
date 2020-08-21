@@ -21,42 +21,6 @@ public abstract class AbstractA_Asset_AdditionAssert<SELF extends AbstractA_Asse
     }
 
 
-	public SELF hasA_Accumulated_Depr(Object expected)
-	{
-		isNotNull();
-		bdAssert("A_Accumulated_Depr", actual.getA_Accumulated_Depr(), expected);
-		return myself;
-	}
-
-
-	public SELF isA_Accumulated_Depr_Adjust()
-	{
-		isNotNull();
-		if (!actual.isA_Accumulated_Depr_Adjust()) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto be A_Accumulated_Depr_Adjust\nbut it was not",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF isNotA_Accumulated_Depr_Adjust()
-	{
-		isNotNull();
-		if (actual.isA_Accumulated_Depr_Adjust()) {
-			failWithMessage("\nExpecting PO: \n  <%s>\n to not be A_Accumulated_Depr_Adjust\nbut it was",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF hasA_Accumulated_Depr_F(Object expected)
-	{
-		isNotNull();
-		bdAssert("A_Accumulated_Depr_F", actual.getA_Accumulated_Depr_F(), expected);
-		return myself;
-	}
-
-
 	public SELF hasA_Asset_Addition_ID(int expected)
 	{
 		isNotNull();
@@ -138,17 +102,6 @@ public abstract class AbstractA_Asset_AdditionAssert<SELF extends AbstractA_Asse
 		int actualField = actual.getA_Life_Period_Min();
 		if (expected != actualField) {
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Life_Period_Min: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasA_Period_Start(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getA_Period_Start();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have A_Period_Start: <%s>\nbut it was: <%s>",
 				getPODescription(), expected, actualField);
 		}
 		return myself;
@@ -305,28 +258,6 @@ public abstract class AbstractA_Asset_AdditionAssert<SELF extends AbstractA_Asse
 		return myself;
 	}
 
-
-	public SELF hasDeltaUseLifeYears(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getDeltaUseLifeYears();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have DeltaUseLifeYears: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasDeltaUseLifeYears_F(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getDeltaUseLifeYears_F();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have DeltaUseLifeYears_F: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
 
 	public SELF hasDescription(String expected)
 	{

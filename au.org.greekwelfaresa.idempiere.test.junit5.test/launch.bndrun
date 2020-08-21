@@ -22,7 +22,6 @@
 	slf4j.simple
 
 -runbundles: \
-	org.eclipse.equinox.event;version='[1.5.0,1.5.1)',\
 	assertj-core;version='[3.16.1,3.16.2)',\
 	bcprov;version='[1.60.0,1.60.1)',\
 	com.google.zxing.core;version='[3.2.1,3.2.2)',\
@@ -34,7 +33,6 @@
 	jakarta.mail.api;version='[1.6.3,1.6.4)',\
 	jakarta.xml.bind-api;version='[2.3.2,2.3.3)',\
 	javax.jms;version='[1.1.0,1.1.1)',\
-	javax.xml;version='[1.3.4,1.3.5)',\
 	junit-jupiter-api;version='[5.6.2,5.6.3)',\
 	junit-jupiter-engine;version='[5.6.2,5.6.3)',\
 	junit-platform-commons;version='[1.6.2,1.6.3)',\
@@ -44,50 +42,55 @@
 	net.bytebuddy.byte-buddy;version='[1.10.5,1.10.6)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.10.5,1.10.6)',\
 	net.sf.supercsv.super-csv;version='[2.4.0,2.4.1)',\
-	org.adempiere.base;version='[6.2.0,6.2.1)',\
 	org.apache.activemq.activemq-core;version='[5.7.0,5.7.1)',\
 	org.apache.activemq.kahadb;version='[5.7.0,5.7.1)',\
-	org.apache.ant;version='[1.10.5,1.10.6)',\
 	org.apache.commons.collections;version='[3.2.2,3.2.3)',\
 	org.apache.commons.net;version='[3.2.0,3.2.1)',\
-	org.apache.ecs;version='[6.2.0,6.2.1)',\
 	org.apache.felix.gogo.command;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.runtime;version='[1.1.0,1.1.1)',\
 	org.apache.felix.gogo.shell;version='[1.1.0,1.1.1)',\
-	org.apache.felix.scr;version='[2.0.14,2.0.15)',\
 	org.apache.geronimo.specs.geronimo-j2ee-management_1.1_spec;version='[1.0.1,1.0.2)',\
-	org.apache.poi.poi;version='[3.15.0,3.15.1)',\
-	org.apache.poi.poi-ooxml;version='[3.15.0,3.15.1)',\
 	org.apache.servicemix.bundles.cglib;version='[3.2.6,3.2.7)',\
 	org.cryptacular;version='[1.2.2,1.2.3)',\
-	org.eclipse.core.contenttype;version='[3.7.200,3.7.201)',\
-	org.eclipse.core.jobs;version='[3.10.200,3.10.201)',\
-	org.eclipse.core.runtime;version='[3.15.100,3.15.101)',\
-	org.eclipse.equinox.app;version='[1.4.0,1.4.1)',\
-	org.eclipse.equinox.common;version='[3.10.200,3.10.201)',\
-	org.eclipse.equinox.ds;version='[1.5.200,1.5.201)',\
-	org.eclipse.equinox.preferences;version='[3.7.200,3.7.201)',\
-	org.eclipse.equinox.registry;version='[3.8.200,3.8.201)',\
 	org.eclipse.jetty.osgi-servlet-api;version='[3.1.0,3.1.1)',\
-	org.eclipse.osgi.services;version='[3.7.100,3.7.101)',\
-	org.eclipse.osgi.util;version='[3.5.100,3.5.101)',\
 	au.org.greekwelfaresa.idempiere.test.common;version=snapshot,\
 	au.org.greekwelfaresa.idempiere.test.junit5.test;version=snapshot,\
-	org.jfree.chart-osgi;version='[1.0.19,1.0.20)',\
-	org.jfree.jcommon-osgi;version='[1.0.23,1.0.24)',\
 	org.krysalis.barcode4j;version='[2.1.0,2.1.1)',\
 	org.mockito.mockito-core;version='[3.3.0,3.3.1)',\
 	org.objenesis;version='[2.6.0,2.6.1)',\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
 	org.osgi.test.common;version='[0.10.0,0.10.1)',\
 	org.passay;version='[1.3.1,1.3.2)',\
-	org.restlet;version='[2.4.1,2.4.2)',\
-	org.adempiere.install;version='[6.2.0,6.2.1)',\
-	org.apache.servicemix.bundles.junit;version='[4.12.0,4.12.1)',\
-	org.compiere.db.postgresql.provider;version='[6.2.0,6.2.1)',\
-	org.eclipse.ant.core;version='[3.5.200,3.5.201)',\
-	org.eclipse.core.variables;version='[3.4.300,3.4.301)',\
-	au.org.greekwelfaresa.idempiere.test.junit5;version=snapshot
+	au.org.greekwelfaresa.idempiere.test.junit5;version=snapshot,\
+	org.adempiere.base;version='[7.1.0,7.1.1)',\
+	org.adempiere.install;version='[7.1.0,7.1.1)',\
+	org.apache.ant;version='[1.10.7,1.10.8)',\
+	org.apache.commons.commons-collections4;version='[4.4.0,4.4.1)',\
+	org.apache.commons.compress;version='[1.19.0,1.19.1)',\
+	org.apache.ecs;version='[7.1.0,7.1.1)',\
+	org.apache.felix.scr;version='[2.1.16,2.1.17)',\
+	org.apache.poi.poi;version='[4.1.0,4.1.1)',\
+	org.apache.poi.poi-ooxml;version='[4.1.0,4.1.1)',\
+	org.apache.poi.poi-ooxml-schemas;version='[4.1.0,4.1.1)',\
+	org.apache.xmlbeans;version='[3.1.0,3.1.1)',\
+	org.compiere.db.postgresql.provider;version='[7.1.0,7.1.1)',\
+	org.eclipse.ant.core;version='[3.5.700,3.5.701)',\
+	org.eclipse.core.contenttype;version='[3.7.600,3.7.601)',\
+	org.eclipse.core.jobs;version='[3.10.700,3.10.701)',\
+	org.eclipse.core.runtime;version='[3.17.100,3.17.101)',\
+	org.eclipse.core.variables;version='[3.4.800,3.4.801)',\
+	org.eclipse.equinox.app;version='[1.4.400,1.4.401)',\
+	org.eclipse.equinox.common;version='[3.11.0,3.11.1)',\
+	org.eclipse.equinox.ds;version='[1.6.100,1.6.101)',\
+	org.eclipse.equinox.event;version='[1.5.300,1.5.301)',\
+	org.eclipse.equinox.preferences;version='[3.7.700,3.7.701)',\
+	org.eclipse.equinox.registry;version='[3.8.700,3.8.701)',\
+	org.eclipse.osgi.services;version='[3.8.0,3.8.1)',\
+	org.eclipse.osgi.util;version='[3.5.300,3.5.301)',\
+	org.hamcrest.core;version='[1.3.0,1.3.1)',\
+	org.jfree.chart;version='[1.0.19,1.0.20)',\
+	org.jfree.jcommon;version='[1.0.23,1.0.24)',\
+	org.junit;version='[4.13.0,4.13.1)'
 
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\

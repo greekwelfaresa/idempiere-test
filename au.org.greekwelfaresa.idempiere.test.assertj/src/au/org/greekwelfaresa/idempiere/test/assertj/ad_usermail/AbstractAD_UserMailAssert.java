@@ -163,15 +163,4 @@ public abstract class AbstractAD_UserMailAssert<SELF extends AbstractAD_UserMail
 		}
 		return myself;
 	}
-
-	public SELF hasW_MailMsg_ID(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getW_MailMsg_ID();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have W_MailMsg_ID: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
 }

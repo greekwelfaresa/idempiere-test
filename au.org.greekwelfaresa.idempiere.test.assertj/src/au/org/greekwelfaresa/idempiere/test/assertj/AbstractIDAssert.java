@@ -47,7 +47,7 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 			expectedField = new Timestamp(millis);
 		}
 		if (!Objects.equals(actualField, expectedField)) {
-			failWithMessage("\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
+			failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s:\n <%s>\nbut it was:\n <%s>",
 				getDescription(), fieldName, expectedField, actualField);
 		}
 	}
@@ -71,16 +71,16 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 						return;
 					}
 				} catch (ArithmeticException e) {
-					failWithMessage("\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>\n" +
+					failWithActualExpectedAndMessage(actualField, expected, "\nExpecting %s\n to have %s:\n <%s>\nbut it was:\n <%s>\n" +
 							"and could not be converted to a long",
 							getDescription(), fieldName, expected, actualField);
 				}
 			}
-			failWithMessage("\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
+			failWithActualExpectedAndMessage(expected, actualField, "\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
 					getDescription(), fieldName, expected, actualField);
 		}
 		if (!Objects.equals(actualField, expectedField)) {
-			failWithMessage("\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
+			failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
 				getDescription(), fieldName, expectedField, actualField);
 		}
 	}

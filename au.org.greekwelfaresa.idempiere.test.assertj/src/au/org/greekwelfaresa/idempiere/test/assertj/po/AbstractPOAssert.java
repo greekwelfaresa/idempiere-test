@@ -28,7 +28,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		int actualColumnCount = actual.get_ColumnCount();
 		if (actualColumnCount != expected) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have <%s> columns\nbut it has <%s>", getPODescription(), expected, actualColumnCount);
+			failWithActualExpectedAndMessage(actualColumnCount, expected, "\nExpecting PO:\n  <%s>\nto have <%s> columns\nbut it has <%s>", getPODescription(), expected, actualColumnCount);
 		}
 		return myself;
 	}
@@ -39,7 +39,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		Object actualColumn = actual.get_Value(columnName);
 		System.err.println("actual: " + actual + ", actualColumn: " + actualColumn + ", expected: " + expected);
 		if (!Objects.equals(expected, actualColumn)) {
-			failWithMessage("\nExpecting PO:\n  <%s>\ncolumn <%s>\nto have value <%s>\nbut it was <%s>", getPODescription(), columnName, expected, actualColumn);
+			failWithActualExpectedAndMessage(actualColumn, expected, "\nExpecting PO:\n  <%s>\ncolumn <%s>\nto have value\n <%s>\nbut it was\n <%s>", getPODescription(), columnName, expected, actualColumn);
 		}
 		return myself;
 	}
@@ -48,7 +48,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		int actualID = actual.get_ID();
 		if (actualID != expected) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have ID: <%s>\nbut it was: <%s>", getPODescription(), expected, actualID);
+			failWithActualExpectedAndMessage(actualID, expected, "\nExpecting PO:\n  <%s>\nto have ID:\n <%s>\nbut it was:\n <%s>", getPODescription(), expected, actualID);
 		}
 		return myself;
 	}
@@ -57,7 +57,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		int actualID = actual.getAD_Client_ID();
 		if (actualID != expected) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have client ID: <%s>\nbut it was: <%s>", getPODescription(), expected, actualID);
+			failWithActualExpectedAndMessage(actualID, expected, "\nExpecting PO:\n  <%s>\nto have client ID:\n <%s>\nbut it was:\n <%s>", getPODescription(), expected, actualID);
 		}
 		return myself;
 	}
@@ -66,7 +66,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		int actualID = actual.getAD_Org_ID();
 		if (actualID != expected) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have org ID: <%s>\nbut it was: <%s>", getPODescription(), expected, actualID);
+			failWithActualExpectedAndMessage(actualID, expected, "\nExpecting PO:\n  <%s>\nto have org ID:\n <%s>\nbut it was:\n <%s>", getPODescription(), expected, actualID);
 		} 
 		return myself;
 	}
@@ -74,7 +74,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF isActive() {
 		isNotNull();
 		if (!actual.isActive()) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto be active", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto be active\nbut it was not", getPODescription());
 		}
 		return myself;
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF isNotActive() {
 		isNotNull();
 		if (actual.isActive()) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto be inactive", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto be inactive\nbut it was active", getPODescription());
 		}
 		return myself;
 	}
@@ -90,7 +90,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF isNew() {
 		isNotNull();
 		if (!actual.is_new()) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto be new", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto be new\nbut it was not", getPODescription());
 		}
 		return myself;
 	}
@@ -98,7 +98,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF isNotNew() {
 		isNotNull();
 		if (actual.is_new()) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto not be new", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto not be new\nbut it was", getPODescription());
 		}
 		return myself;
 	}
@@ -106,7 +106,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF isChanged() {
 		isNotNull();
 		if (!actual.is_Changed()) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto be changed", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto be changed\nbut it was not", getPODescription());
 		}
 		return myself;
 	}
@@ -114,7 +114,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF isNotChanged() {
 		isNotNull();
 		if (actual.is_Changed()) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto be unchanged", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto be unchanged\nbut it was changed", getPODescription());
 		}
 		return myself;
 	}
@@ -123,7 +123,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		int a = actual.getUpdatedBy();
 		if (a != expected) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated by userID: <%s>\nbut it was: <%s>",
+			failWithActualExpectedAndMessage(a, expected, "\nExpecting PO:\n  <%s>\nto have been updated by userID:\n <%s>\nbut it was updated by:\n <%s>",
 					getPODescription(), expected, a);
 		}
 		return myself;
@@ -133,7 +133,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		int a = actual.getCreatedBy();
 		if (a != expected) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have been created by userID: <%s>\nbut it was: <%s>",
+			failWithActualExpectedAndMessage(a, expected, "\nExpecting PO:\n  <%s>\nto have been created by userID:\n <%s>\nbut it was created by:\n <%s>",
 					getPODescription(), expected, a);
 		}
 		return myself;
@@ -153,7 +153,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		Timestamp a = actual.getUpdated();
 		if (!Objects.equals(expected, a)) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated at: <%s>\nbut it was updated at: <%s>",
+			failWithActualExpectedAndMessage(a, expected, "\nExpecting PO:\n  <%s>\nto have been updated at:\n <%s>\nbut it was updated at:\n <%s>",
 					getPODescription(), expected == null ? null : new Timestamp(expected.getTime()), a);
 		}
 		return myself;
@@ -176,10 +176,10 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		} else {
 			Timestamp a = actual.getUpdated();
 			if (a == null) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated after: <%s>\nbut update time was null",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated after:\n <%s>\nbut update time was null",
 						getPODescription(), new Timestamp(start.getTime()));
 			} else if (!a.after(start)) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated after: <%s>\nbut it was updated at: <%s>",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated after:\n <%s>\nbut it was updated at:\n <%s>",
 						getPODescription(), new Timestamp(start.getTime()), a);
 			}
 		}
@@ -203,10 +203,10 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		} else {
 			Timestamp a = actual.getUpdated();
 			if (a == null) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated before: <%s>\nbut update time was null",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated before:\n <%s>\nbut update time was null",
 						getPODescription(), new Timestamp(start.getTime()));
 			} else if (!a.before(start)) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated before: <%s>\nbut it was updated at: <%s>",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been updated before:\n <%s>\nbut it was updated at:\n <%s>",
 						getPODescription(), new Timestamp(start.getTime()), a);
 			}
 		}
@@ -253,7 +253,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created after: <%s>\nbut create time was null",
 						getPODescription(), new Timestamp(start.getTime()));
 			} else if (!a.after(start)) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created after: <%s>\nbut it was created at: <%s>",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created after:\n <%s>\nbut it was created at:\n <%s>",
 						getPODescription(), new Timestamp(start.getTime()), a);
 			}
 		}
@@ -277,10 +277,10 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		} else {
 			Timestamp a = actual.getCreated();
 			if (a == null) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created before: <%s>\nbut create time was null",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created before:\n <%s>\nbut create time was null",
 						getPODescription(), new Timestamp(start.getTime()));
 			} else if (!a.before(start)) {
-				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created before: <%s>\nbut it was created at: <%s>",
+				failWithMessage("\nExpecting PO:\n  <%s>\nto have been created before:\n <%s>\nbut it was created at:\n <%s>",
 						getPODescription(), new Timestamp(start.getTime()), a);
 			}
 		}

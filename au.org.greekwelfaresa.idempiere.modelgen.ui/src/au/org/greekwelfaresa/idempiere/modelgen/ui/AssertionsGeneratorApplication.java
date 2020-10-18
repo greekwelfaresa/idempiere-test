@@ -11,7 +11,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,    *
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.                     *
  *****************************************************************************/
-package au.org.greekwelfaresa.idempiere.test.generator;
+package au.org.greekwelfaresa.idempiere.modelgen.ui;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,6 +25,8 @@ import javax.swing.JOptionPane;
 import org.compiere.Adempiere;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import au.org.greekwelfaresa.idempiere.modelgen.ModelAssertionGenerator;
 
 @Component(property = { "main.thread=true" })
 public class AssertionsGeneratorApplication implements Runnable {

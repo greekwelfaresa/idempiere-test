@@ -1,4 +1,4 @@
-package au.org.greekwelfaresa.idempiere.test.generator;
+package au.org.greekwelfaresa.idempiere.modelgen.ui;
 
 import java.awt.Component;
 

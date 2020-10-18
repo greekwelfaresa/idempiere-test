@@ -17,7 +17,7 @@
  *                 Teo Sarca - www.arhipac.ro                                 *
  *                 Trifon Trifonov                                            *
  *****************************************************************************/
-package au.org.greekwelfaresa.idempiere.test.generator;
+package au.org.greekwelfaresa.idempiere.modelgen;
 
 import java.io.File;
 import java.io.FileOutputStream;

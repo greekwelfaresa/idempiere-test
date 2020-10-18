@@ -1,0 +1,6 @@
+
+-buildpath: org.adempiere.base;version=latest,\
+	javax.annotation-api;version=latest,\
+	org.osgi.service.component.annotations;version='1.3.0',\
+	au.org.greekwelfaresa.idempiere.modelgen;version=snapshot,\
+	au.org.greekwelfaresa.idempiere.test.assertj;version=snapshot

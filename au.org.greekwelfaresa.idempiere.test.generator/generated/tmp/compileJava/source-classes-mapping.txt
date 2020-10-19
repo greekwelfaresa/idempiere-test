@@ -1,0 +1,10 @@
+au/org/greekwelfaresa/idempiere/test/generator/AssertionsGeneratorApplication.java
+ au.org.greekwelfaresa.idempiere.test.generator.AssertionsGeneratorApplication
+au/org/greekwelfaresa/idempiere/test/generator/ModelAssertionGenerator.java
+ au.org.greekwelfaresa.idempiere.test.generator.ModelAssertionGenerator
+au/org/greekwelfaresa/idempiere/test/generator/EntityTypeRenderer.java
+ au.org.greekwelfaresa.idempiere.test.generator.EntityTypeRenderer
+au/org/greekwelfaresa/idempiere/test/generator/AssertionsGeneratorDialog.java
+ au.org.greekwelfaresa.idempiere.test.generator.AssertionsGeneratorDialog
+au/org/greekwelfaresa/idempiere/test/generator/EntityTypeModel.java
+ au.org.greekwelfaresa.idempiere.test.generator.EntityTypeModel

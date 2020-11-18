@@ -2,10 +2,12 @@ package au.org.greekwelfaresa.idempiere.test.assertj;
 
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.impexp.BankStatementMatchInfo;
+import org.compiere.model.MAccount;
 import org.compiere.model.PO;
 import org.compiere.process.ProcessInfoLog;
 
 import au.org.greekwelfaresa.idempiere.test.assertj.bankstatementmatchinfo.BankStatementMatchInfoAssert;
+import au.org.greekwelfaresa.idempiere.test.assertj.maccount.AccountAssert;
 import au.org.greekwelfaresa.idempiere.test.assertj.po.POAssert;
 import au.org.greekwelfaresa.idempiere.test.assertj.processinfolog.ProcessInfoLogAssert;
 
@@ -20,5 +22,9 @@ public interface IDSoftAssertionsProvider extends SoftAssertionsProvider {
 
 	default BankStatementMatchInfoAssert assertThat(BankStatementMatchInfo a) {
 		return proxy(BankStatementMatchInfoAssert.class, BankStatementMatchInfo.class, a);
+	}
+	
+	default AccountAssert assertThat(MAccount a) {
+		return proxy(AccountAssert.class, MAccount.class, a);
 	}
 }

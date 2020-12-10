@@ -1500,7 +1500,9 @@ public class IDempiereEnv implements AutoCloseable {
 		if (getWarehouse() == null) {
 			appendErrorMsg("Warehouse is Null");
 		}
-		if (!getOrder().getDocStatus().equals(X_C_Order.DOCSTATUS_Completed)) {
+		if (getOrder() == null) {
+			appendErrorMsg("Order is Null");
+		} else if (!getOrder().getDocStatus().equals(X_C_Order.DOCSTATUS_Completed)) {
 			appendErrorMsg("Order Not Completed");
 		}
 		validate();
@@ -1746,28 +1748,16 @@ public class IDempiereEnv implements AutoCloseable {
 
 	protected Map<Integer, CLogger> logMap = new HashMap<>();
 
-	public <T extends PO> T createPO(Class<T> type) {
-		return createPO(type, get_TrxName());
+	public <T extends PO> T getPO(int id, Class<T> type) {
+		return getPO(id, type, get_TrxName());
 	}
 
-	public <T extends PO> T createPO(Class<T> type, String trxName) {
+	public <T extends PO> T getPO(int id, Class<T> type, String trxName) {
 		try {
 			Constructor<T> c = type.getConstructor(Properties.class, int.class, String.class);
 			T retval = c.newInstance(getCtx(), 0, trxName);
 			CLogger log = injectMockLog(retval);
 			logMap.put(System.identityHashCode(retval), log);
-			try {
-				Method method = type.getMethod("setName", String.class);
-				final String name = getStepMsg().length() > 60 ? getStepMsg().substring(0, 60) : getStepMsg();
-				method.invoke(retval, name);
-			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-			}
-			try {
-				Method method = type.getMethod("setDescription", String.class);
-				method.invoke(retval, getStepMsgLong());
-			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-			}
-
 			return retval;
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			throw new IllegalArgumentException("Couldn't find PO's constructor for type " + type, e);
@@ -1776,6 +1766,27 @@ public class IDempiereEnv implements AutoCloseable {
 		} catch (InvocationTargetException e) {
 			throw new IllegalArgumentException("Error running constructor for PO " + type, e.getCause());
 		}
+	}
+
+	public <T extends PO> T createPO(Class<T> type) {
+		return createPO(type, get_TrxName());
+	}
+
+	public <T extends PO> T createPO(Class<T> type, String trxName) {
+		T retval = getPO(0, type, trxName);
+		try {
+			Method method = type.getMethod("setName", String.class);
+			final String name = getStepMsg().length() > 60 ? getStepMsg().substring(0, 60) : getStepMsg();
+			method.invoke(retval, name);
+		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+		}
+		try {
+			Method method = type.getMethod("setDescription", String.class);
+			method.invoke(retval, getStepMsgLong());
+		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+		}
+
+		return retval;
 	}
 
 	public CLogger getLogger(PO po) {
@@ -1976,7 +1987,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public MLocation createLocation() {
 		return createLocation(get_TrxName());
 	}
-	
+
 	public MLocation createLocation(String trxName) {
 		validate();
 

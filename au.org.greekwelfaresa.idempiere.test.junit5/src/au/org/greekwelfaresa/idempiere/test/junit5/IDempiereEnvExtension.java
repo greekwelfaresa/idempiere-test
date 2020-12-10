@@ -27,13 +27,15 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.platform.commons.util.ExceptionUtils;
 
 import au.org.greekwelfaresa.idempiere.test.common.annotation.InjectIDempiereEnv;
 import au.org.greekwelfaresa.idempiere.test.common.env.IDempiereEnv;
+import org.adempiere.exceptions.AdempiereException;
 
 public class IDempiereEnvExtension
-		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback, ParameterResolver {
+		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback, ParameterResolver, TestExecutionExceptionHandler {
 
 	private static final Object IDEMPIERE_ENV_KEY = "idempiere.env";
 
@@ -174,5 +176,12 @@ public class IDempiereEnvExtension
 		}
 
 		throw new ExtensionConfigurationException("No parameter types known to IDempiereEnvExtension were found");
+	}
+
+	@Override
+	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+		if (throwable instanceof AdempiereException) {
+			throw throwable.getCause();
+		}
 	}
 }

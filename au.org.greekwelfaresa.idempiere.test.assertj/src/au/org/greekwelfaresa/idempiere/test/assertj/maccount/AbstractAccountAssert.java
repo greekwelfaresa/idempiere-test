@@ -15,7 +15,8 @@ public class AbstractAccountAssert<SELF extends AbstractC_ValidCombinationAssert
 	public SELF hasAccount(MElementValue expected)
 	{
 		isNotNull();
-		if (actual.getAccount_ID() != expected.get_ID()) {
+		final int actualId = actual.getAccount_ID();
+		if (expected == null && actualId != 0 || actualId != expected.get_ID()) {
 			// Lazy evaluation.
 			MElementValue actualField = actual.getAccount();
 			throw failureWithActualExpected(actualField, expected, "\nExpecting MAccount: \n  <%s>\n to have Account: <%s>\nbut it was: <%s>",

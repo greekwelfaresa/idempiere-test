@@ -79,7 +79,12 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 			failWithActualExpectedAndMessage(expected, actualField, "\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
 					getDescription(), fieldName, expected, actualField);
 		}
-		if (!Objects.equals(actualField, expectedField)) {
+		if (actualField == null) {
+			if (expectedField != null) {
+				failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s: <%s>\nbut it was null",
+						getDescription(), fieldName, expectedField);
+			}
+		} else if (actualField.compareTo(expectedField) != 0) {
 			failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
 				getDescription(), fieldName, expectedField, actualField);
 		}

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
+import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -35,7 +36,30 @@ import au.org.greekwelfaresa.idempiere.test.common.env.IDempiereEnv;
 import org.adempiere.exceptions.AdempiereException;
 
 public class IDempiereEnvExtension
-		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback, ParameterResolver, TestExecutionExceptionHandler {
+		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback, ParameterResolver, LifecycleMethodExecutionExceptionHandler, TestExecutionExceptionHandler {
+
+	@Override
+	public void handleBeforeAllMethodExecutionException(ExtensionContext context, Throwable throwable)
+			throws Throwable {
+		handleTestExecutionException(context, throwable);
+	}
+
+	@Override
+	public void handleBeforeEachMethodExecutionException(ExtensionContext context, Throwable throwable)
+			throws Throwable {
+		handleTestExecutionException(context, throwable);
+	}
+
+	@Override
+	public void handleAfterEachMethodExecutionException(ExtensionContext context, Throwable throwable)
+			throws Throwable {
+		handleTestExecutionException(context, throwable);
+	}
+
+	@Override
+	public void handleAfterAllMethodExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+		handleTestExecutionException(context, throwable);
+	}
 
 	private static final Object IDEMPIERE_ENV_KEY = "idempiere.env";
 
@@ -180,8 +204,10 @@ public class IDempiereEnvExtension
 
 	@Override
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+		System.err.println("intercepting exception: " + throwable);
 		if (throwable instanceof AdempiereException) {
 			throw throwable.getCause();
 		}
+		throw throwable;
 	}
 }

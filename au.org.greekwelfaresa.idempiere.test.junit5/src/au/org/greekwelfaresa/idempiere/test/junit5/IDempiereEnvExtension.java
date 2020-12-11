@@ -204,8 +204,7 @@ public class IDempiereEnvExtension
 
 	@Override
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-		System.err.println("intercepting exception: " + throwable);
-		if (throwable instanceof AdempiereException) {
+		if (throwable instanceof AdempiereException && throwable.getCause() != null) {
 			throw throwable.getCause();
 		}
 		throw throwable;

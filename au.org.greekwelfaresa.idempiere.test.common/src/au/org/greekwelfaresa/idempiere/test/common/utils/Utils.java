@@ -1,6 +1,6 @@
 package au.org.greekwelfaresa.idempiere.test.common.utils;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +12,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.compiere.util.CLogger;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.osgi.test.common.exceptions.Exceptions;
 
 public class Utils {
@@ -30,7 +32,8 @@ public class Utils {
 	}
 
 	public static CLogger injectMockLog(Object object) {
-		CLogger mockLog = mock(CLogger.class);
+		CLogger orig = getField(object, "log");
+		CLogger mockLog = spy(orig);
 		try {
 			setField(object, "log", mockLog);
 		} catch (Exception e) {
@@ -39,9 +42,8 @@ public class Utils {
 		return mockLog;
 	}
 	
-
 	public static CLogger injectStaticMockLog(Class<?> clazz) {
-		CLogger mockLog = mock(CLogger.class);
+		CLogger mockLog = spy(getStaticField(clazz, "s_log"));
 		try {
 			setStaticField(clazz, "s_log", mockLog);
 		} catch (Exception e) {
@@ -89,6 +91,17 @@ public class Utils {
 		f.setAccessible(true);
 		try {
 			return (T)f.get(o);
+		} catch (IllegalAccessException e) {
+			throw Exceptions.duck(e);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T getStaticField(Class<?> clazz, String fieldName) {
+		Field f = getField(clazz, fieldName);
+		f.setAccessible(true);
+		try {
+			return (T)f.get(null);
 		} catch (IllegalAccessException e) {
 			throw Exceptions.duck(e);
 		}

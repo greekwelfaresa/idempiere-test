@@ -1,4 +1,4 @@
--include: ${workspace}/idempiere-cnf/includes/idempiere.bnd
+-include: ${workspace}/cnf/idempiere/includes/idempiere.bnd
 
 -buildpath: \
 	${junit},\

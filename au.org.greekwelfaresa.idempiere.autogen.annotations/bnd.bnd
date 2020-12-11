@@ -1,0 +1,2 @@
+Export-Package: au.org.greekwelfaresa.idempiere.autogen.annotations
+-buildpath: osgi.annotation;version='7.0.0'

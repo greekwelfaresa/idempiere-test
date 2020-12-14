@@ -1053,23 +1053,19 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_docAction = m_docAction;
 	}
 
-	// only used when changing BPs
-	protected MPriceList getPriceListSO() {
+	public MPriceList getPriceListSO() {
 		return m_priceListSO == null ? (mParentEnv == null ? null : mParentEnv.getPriceListSO()) : m_priceListSO;
 	}
 
-	// only used when changing BPs
-	protected void setPriceListSO(MPriceList m_priceListSO) {
+	public void setPriceListSO(MPriceList m_priceListSO) {
 		this.m_priceListSO = m_priceListSO;
 	}
 
-	// only used when changing BPs
-	protected MPriceList getPriceListPO() {
+	public MPriceList getPriceListPO() {
 		return m_priceListPO == null ? (mParentEnv == null ? null : mParentEnv.getPriceListPO()) : m_priceListPO;
 	}
 
-	// only used when changing BPs
-	protected void setPriceListPO(MPriceList m_priceListPO) {
+	public void setPriceListPO(MPriceList m_priceListPO) {
 		this.m_priceListPO = m_priceListPO;
 	}
 
@@ -1212,39 +1208,19 @@ public class IDempiereEnv implements AutoCloseable {
 
 		// create SO pricelist if not already created from previous BP - used later in
 		// document creation
-		MPriceList spl = null;
-		if (getPriceListSO() == null) {
-			// Note that price lists created within the current transaction won't be seen.
-			spl = new MPriceList(getCtx(), 0, null);
-			spl.setName("SO_During: " + getStepName() + getRandom());
-			spl.setDescription(getStepMsgLong());
-			spl.setAD_Org_ID(0);
-			spl.setIsSOPriceList(true);
-			spl.setC_Currency_ID(getCurrency().get_ID());
-			spl.saveEx();
-			spl.saveEx(get_TrxName());
-			setPriceListSO(spl);
-			// Ensure that we clean up afterwards.
-			registerPO(spl);
+		MPriceList spl = getPriceListSO();
+		if (spl == null) {
+			spl = createPriceListSO();
 		}
-		bp.setM_PriceList_ID(getPriceListSO().get_ID());
+		bp.setM_PriceList_ID(spl.get_ID());
 
 		// create PO priceList if not already created from previous BP - used later in
 		// document creation
-		MPriceList ppl = null;
-		if (getPriceListPO() == null) {
-			ppl = new MPriceList(getCtx(), 0, null);
-			ppl.setName("PO_During: " + getStepName() + getRandom());
-			ppl.setDescription(getStepMsgLong());
-			ppl.setAD_Org_ID(0);
-			ppl.setIsSOPriceList(false);
-			ppl.setC_Currency_ID(getCurrency().get_ID());
-			ppl.saveEx();
-			ppl.saveEx(get_TrxName());
-			setPriceListPO(ppl);
-			registerPO(ppl);
+		MPriceList ppl = getPriceListPO();
+		if (ppl == null) {
+			ppl = createPriceListPO();
 		}
-		bp.setPO_PriceList_ID(getPriceListPO().get_ID());
+		bp.setPO_PriceList_ID(ppl.get_ID());
 
 		bp.saveEx();
 
@@ -1272,6 +1248,41 @@ public class IDempiereEnv implements AutoCloseable {
 		// return null;
 	} // create BP
 
+	public MPriceList createPriceListSO() {
+		if (getPriceListSO() == null) {
+			MPriceList spl = new MPriceList(getCtx(), 0, null);
+			spl.setName("SO_During: " + getStepName() + getRandom());
+			spl.setDescription(getStepMsgLong());
+			spl.setAD_Org_ID(0);
+			spl.setIsSOPriceList(true);
+			spl.setC_Currency_ID(getCurrency().get_ID());
+			spl.saveEx();
+			spl.saveEx(get_TrxName());
+			setPriceListSO(spl);
+			// Ensure that we clean up afterwards.
+			registerPO(spl);
+			return spl;
+		}
+		return null;
+	}
+
+	public MPriceList createPriceListPO() {
+		if (getPriceListPO() == null) {
+			MPriceList ppl = new MPriceList(getCtx(), 0, null);
+			ppl.setName("PO_During: " + getStepName() + getRandom());
+			ppl.setDescription(getStepMsgLong());
+			ppl.setAD_Org_ID(0);
+			ppl.setIsSOPriceList(false);
+			ppl.setC_Currency_ID(getCurrency().get_ID());
+			ppl.saveEx();
+			ppl.saveEx(get_TrxName());
+			setPriceListPO(ppl);
+			registerPO(ppl);
+			return ppl;
+		}
+		return null;
+	}
+	
 	public String createRoutingNo() {
 		return m_routingNoSource.get();
 	}
@@ -1326,8 +1337,8 @@ public class IDempiereEnv implements AutoCloseable {
 
 			if (getBP() != null) {
 				// create PO and SO price list entries
-				MPriceList spl = new MPriceList(getCtx(), getBP().getM_PriceList_ID(), null);
-				MPriceList ppl = new MPriceList(getCtx(), getBP().getPO_PriceList_ID(), null);
+				MPriceList spl = getPriceListSO();
+				MPriceList ppl = getPriceListPO();
 
 				Timestamp datePL = getDatePriceList();
 				if (datePL == null)
@@ -1452,7 +1463,7 @@ public class IDempiereEnv implements AutoCloseable {
 		order.setDatePromised(getDate());
 		order.setIsSOTrx(getDocType().isSOTrx());
 		order.setBPartner(getBP());
-		order.setM_PriceList_ID(getDocType().isSOTrx() ? getBP().getM_PriceList_ID() : getBP().getPO_PriceList_ID());
+		order.setM_PriceList_ID(getDocType().isSOTrx() ? getPriceListSO().get_ID() : getPriceListPO().get_ID());
 		order.setM_Warehouse_ID(getWarehouse().get_ID());
 		order.saveEx();
 		setOrder(order);

@@ -813,6 +813,10 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_qty = m_qty;
 	}
 
+	public void setQty(int m_qty) {
+		setQty(new BigDecimal(m_qty));
+	}
+
 	public void setPriceSO(BigDecimal m_price) {
 		this.m_limitPriceSO = m_price;
 		this.m_listPriceSO = m_price;

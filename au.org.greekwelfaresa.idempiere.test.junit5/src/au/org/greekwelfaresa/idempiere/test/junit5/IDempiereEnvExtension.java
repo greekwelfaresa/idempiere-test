@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -98,8 +99,7 @@ public class IDempiereEnvExtension
 				current = current.get().getParent();
 			}
 			IDempiereEnv parentEnv = parentCloseableEnv == null ? null : parentCloseableEnv.getEnv();
-			SoftAssertionsProvider provider = extensionContext.getStore(SOFT_ASSERTIONS_EXTENSION_NAMESPACE)
-					.get(SoftAssertionsProvider.class, SoftAssertionsProvider.class);
+			SoftAssertionsProvider provider = SoftAssertionsExtension.getSoftAssertionsProvider(extensionContext, SoftAssertions.class);
 
 			env = IDempiereEnv.newEnv().withParameters(parameters).withParent(parentEnv).withSoftAssertions(provider)
 					.withClassName(extensionContext.getTestClass().map(Class::getName).orElse(null))

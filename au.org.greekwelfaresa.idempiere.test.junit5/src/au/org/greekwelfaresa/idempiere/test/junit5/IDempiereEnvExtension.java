@@ -1,5 +1,6 @@
 package au.org.greekwelfaresa.idempiere.test.junit5;
 
+import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
 import static org.osgi.test.common.inject.FieldInjector.assertFieldIsOfType;
 import static org.osgi.test.common.inject.FieldInjector.assertParameterIsOfType;
 import static org.osgi.test.common.inject.FieldInjector.findAnnotatedFields;
@@ -81,9 +82,6 @@ public class IDempiereEnvExtension
 		}
 	}
 
-	private static final Namespace SOFT_ASSERTIONS_EXTENSION_NAMESPACE = Namespace
-			.create(SoftAssertionsExtension.class);
-
 	private static class CloseableEnv implements CloseableResource {
 
 		private final IDempiereEnv env;
@@ -157,7 +155,7 @@ public class IDempiereEnvExtension
 		cleanup(context);
 	}
 
-	public IDempiereEnv getIDempiereEnvOrComputeIfAbsent(ExtensionContext extensionContext,
+	public static IDempiereEnv getIDempiereEnvOrComputeIfAbsent(ExtensionContext extensionContext,
 			InjectIDempiereEnv parameters) {
 		return getStore(extensionContext).getOrComputeIfAbsent(IDEMPIERE_ENV_KEY,
 				key -> new CloseableEnv(extensionContext, parameters), CloseableEnv.class).getEnv();

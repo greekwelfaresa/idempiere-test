@@ -2,6 +2,7 @@ package au.org.greekwelfaresa.idempiere.test.common.env;
 
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ONE;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ZERO;
+import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.timestamp;
 
@@ -24,12 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
 import org.adempiere.base.Core;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.Adempiere;
 import org.compiere.model.MAcctSchema;
@@ -98,7 +97,6 @@ import org.compiere.model.X_M_Warehouse;
 import org.compiere.process.ProcessCall;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoParameter;
-import org.compiere.process.SvrProcess;
 import org.compiere.util.CLogger;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
@@ -329,6 +327,7 @@ public class IDempiereEnv implements AutoCloseable {
 		mCtx.setProperty(Env.AD_USER_ID, String.valueOf(mUserId));
 		mCtx.setProperty(Env.AD_ROLE_ID, String.valueOf(mRoleId));
 		mCtx.setProperty(Env.M_WAREHOUSE_ID, String.valueOf(mWarehouseId));
+		waitForAdempiereStart();
 	}
 
 	// Saves the given pos in the context of the current transaction.
@@ -355,20 +354,8 @@ public class IDempiereEnv implements AutoCloseable {
 		return mAutoRollback;
 	}
 
-	public <P extends SvrProcess> ProcessController<P> buildProcess(Class<P> processClass) {
-		final AtomicReference<ProcessController<P>> retval = new AtomicReference<>();
-		softly.check(() -> Assertions.assertThatCode(() -> {
-			retval.set(new ProcessController<P>(processClass, this));
-		}).as("ProcessController for " + processClass.getSimpleName()).doesNotThrowAnyException());
-		return retval.get();
-	}
-
 	public IDempiereEnv getParentEnv() {
 		return mParentEnv;
-	}
-
-	public <P extends SvrProcess> ProcessController<P> buildProcess(P process) {
-		return new ProcessController<>(process, this);
 	}
 
 	private List<WeakReference<AutoCloseable>> toBeClosed = new ArrayList<>();
@@ -1073,7 +1060,7 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_priceListPO = m_priceListPO;
 	}
 
-	public <P extends SvrProcess> ProcessController<P> processOf(Class<P> processType) {
+	public ProcessController<ProcessCall> processOf(String processType) {
 		try {
 			return new ProcessController<>(processType, this);
 		} catch (Exception e) {
@@ -1081,7 +1068,15 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 	}
 
-	public <P extends SvrProcess> ProcessController<P> processOf(P process) {
+	public <P extends ProcessCall> ProcessController<P> processOf(Class<P> processType) {
+		try {
+			return new ProcessController<>(processType, this);
+		} catch (Exception e) {
+			throw Exceptions.duck(e);
+		}
+	}
+
+	public <P extends ProcessCall> ProcessController<P> processOf(P process) {
 		return new ProcessController<>(process, this);
 	}
 

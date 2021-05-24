@@ -12,21 +12,21 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
 
+import org.adempiere.base.Core;
 import org.compiere.model.MPInstance;
 import org.compiere.model.MProcess;
 import org.compiere.model.PO;
+import org.compiere.process.ProcessCall;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoLog;
 import org.compiere.process.ProcessInfoParameter;
-import org.compiere.process.SvrProcess;
 import org.compiere.util.CLogger;
 import org.compiere.util.Trx;
-import au.org.greekwelfaresa.idempiere.test.common.utils.ProcessController;
 import org.osgi.test.common.exceptions.Exceptions;
 
 import au.org.greekwelfaresa.idempiere.test.common.env.IDempiereEnv;
 
-public class ProcessController<P extends SvrProcess> {
+public class ProcessController<P extends ProcessCall> {
 
 	private Properties mCtx;
 	private P mProcess;
@@ -40,7 +40,7 @@ public class ProcessController<P extends SvrProcess> {
 	private CLogger mLog;
 	private ProcessInfo mProcessInfo;
 	
-	private static <X> X instantiate(Class<X> type)  {
+	private static <X extends ProcessCall> X instantiate(Class<X> type)  {
 		try {
 			Constructor<X> c = type.getConstructor();
 			return c.newInstance();
@@ -49,6 +49,11 @@ public class ProcessController<P extends SvrProcess> {
 		} catch (Exception e) {
 			throw Exceptions.duck(e);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ProcessController(String processType, IDempiereEnv env) {
+		this((P)Core.getProcess(processType), env);
 	}
 	
 	public ProcessController(Class<P> processType, IDempiereEnv env) {

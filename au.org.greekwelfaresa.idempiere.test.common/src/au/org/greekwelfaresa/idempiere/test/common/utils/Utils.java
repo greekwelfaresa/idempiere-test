@@ -10,10 +10,14 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.compiere.Adempiere;
+import org.compiere.model.ServerStateChangeEvent;
+import org.compiere.model.ServerStateChangeListener;
 import org.compiere.util.CLogger;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.osgi.test.common.exceptions.Exceptions;
 
 public class Utils {
@@ -31,6 +35,35 @@ public class Utils {
 		return parseTS(ts);
 	}
 
+	public static void waitForAdempiereStart() {
+		CountDownLatch flag = new CountDownLatch(1);
+		synchronized (Adempiere.class) {
+			if (Adempiere.isStarted()) {
+				return;
+			} else {
+				// Can't reference "this" from within a lamda expression - that's why this is an
+				// anonymous inner class instead.
+				final ServerStateChangeListener l = new ServerStateChangeListener() {
+					@Override
+					public void stateChange(ServerStateChangeEvent event) {
+						if (event.getEventType() == ServerStateChangeEvent.SERVER_START) {
+							flag.countDown();
+							Adempiere.removeServerStateChangeListener(this);
+						}
+					}
+				};
+				Adempiere.addServerStateChangeListener(l);
+			}
+		}
+		try {
+			if (!flag.await(30, TimeUnit.SECONDS)) {
+				throw new IllegalStateException("iDempiere still not started after 30s");
+			}
+		} catch (InterruptedException e) {
+			throw new IllegalStateException("Interrupted while for iDempiere to start", e);
+		}
+	}
+	
 	public static CLogger injectMockLog(Object object) {
 		CLogger orig = getField(object, "log");
 		CLogger mockLog = spy(orig);
@@ -139,6 +172,25 @@ public class Utils {
 		} 
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <R> R invokeStatic(Class<?> clazz, String method, Class<?>[] parameterTypes, Object... args) {
+		if (clazz == null) {
+			throw new NullPointerException("clazz is null");
+		}
+		try {
+			if (parameterTypes == null) {
+				parameterTypes = new Class<?>[0];
+			}
+			Method m = clazz.getDeclaredMethod(method, parameterTypes);
+			m.setAccessible(true);
+			return (R)m.invoke(null, args);
+		} catch (InvocationTargetException e) {
+			throw Exceptions.duck(e.getTargetException());
+		} catch (Exception e) {
+			throw Exceptions.duck(e);
+		} 
+	}
+	
 	// Convenience method to turn human-readable string into seconds past epoch.
 	public static long parseTSLong(String ts) {
 	//			FMT.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -154,4 +206,11 @@ public class Utils {
 	}
 
 	public static DateFormat FMT = new SimpleDateFormat("yyyy-MM-dd");
+
+	// iDempiere doesn't store milliseconds, so for our assertion to work we need
+	// to truncate our timestamp.
+	public static final Timestamp truncTS(long millis) {
+		long trunc = millis / 1000;
+		return new Timestamp(trunc  * 1000);
+	}
 }

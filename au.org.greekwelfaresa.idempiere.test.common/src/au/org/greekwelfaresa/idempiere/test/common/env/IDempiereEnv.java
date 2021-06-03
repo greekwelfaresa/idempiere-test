@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -32,6 +33,7 @@ import org.adempiere.base.Core;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.Adempiere;
 import org.compiere.model.MAcctSchema;
+import org.compiere.model.MAttachment;
 import org.compiere.model.MBPBankAccount;
 import org.compiere.model.MBPartner;
 import org.compiere.model.MBPartnerLocation;
@@ -451,16 +453,20 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 	}
 
+	static String createShortTrxName(String base) {
+		return (base.length() > 54 ? base.substring(0, 54) : base) + "_" + UUID.randomUUID().toString().substring(0, 8);
+	}
+	
 	public void before() throws Exception {
 		if (mParentEnv == null) {
-			final String trxName = mClassName + (mName == null ? "" : ('.' + mName));
-			mTrxName = Trx.createTrxName(trxName);
+			final String trxName = mClassName + (mName == null ? "" : ("." + mName));
+			mTrxName = createShortTrxName(trxName);
 			mTrx = Trx.get(mTrxName, true);
 			ourTrx = true;
 		} else {
 			mTrxName = mParentEnv.mTrxName;
 			mTrx = mParentEnv.mTrx;
-			mSavePoint = mTrx.setSavepoint(mName);
+			mSavePoint = mTrx.setSavepoint(createShortTrxName(mName));
 			mParentEnv.reloadPOs();
 			ourTrx = false;
 		}
@@ -1060,7 +1066,7 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_priceListPO = m_priceListPO;
 	}
 
-	public ProcessController<ProcessCall> processOf(String processType) {
+	public <P extends ProcessCall> ProcessController<P> processOf(String processType) {
 		try {
 			return new ProcessController<>(processType, this);
 		} catch (Exception e) {
@@ -1176,6 +1182,18 @@ public class IDempiereEnv implements AutoCloseable {
 		return mClassName + (name == null ? "" : '.' + name);
 	}
 
+	/**
+	 * Version of getStepMsg() that takes the last 60 chars
+	 * of the raw step msg.
+	 * @return
+	 */
+	public String getStepMsgName() {
+		final String stepMsg = getStepMsg();
+		final int length = stepMsg.length();
+		final String name = length > 60 ? stepMsg.substring(length - 60, length) : stepMsg;
+		return name;
+	}
+	
 	public String getStepMsgLong() {
 		return mTrxName;
 	}
@@ -1197,7 +1215,7 @@ public class IDempiereEnv implements AutoCloseable {
 		// create bp
 		T bp = createPO(type, null);
 		bp.setAD_Org_ID(0);
-		bp.setName(getStepMsg());
+		bp.setName(getStepMsgName());
 		bp.setDescription(getStepMsgLong());
 		bp.setIsCustomer(true);
 		bp.setIsVendor(true);
@@ -1300,7 +1318,7 @@ public class IDempiereEnv implements AutoCloseable {
 		acct.setC_BPartner_ID(getBP().get_ID());
 		acct.setIsACH(true); // Accepts electronic transfers
 		acct.setBPBankAcctUse(MBPBankAccount.BPBANKACCTUSE_Both);
-		acct.setA_Name(getStepMsg());
+		acct.setA_Name(getStepMsgName());
 		if (getBank() != null) {
 			acct.setC_Bank_ID(getBank().get_ID());
 		} else {
@@ -1677,7 +1695,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public MBank createBank() {
 		validate();
 		MBank bank = new MBank(getCtx(), 0, null);
-		bank.setName(getStepMsg());
+		bank.setName(getStepMsgName());
 		bank.setDescription(getStepMsgLong());
 		bank.setRoutingNo(createRoutingNo());
 		bank.saveEx();
@@ -1701,7 +1719,7 @@ public class IDempiereEnv implements AutoCloseable {
 		validate();
 		MBankAccount bankAcct = new MBankAccount(getCtx(), 0, null);
 		bankAcct.setC_Bank_ID(getBank().get_ID());
-		bankAcct.setName(getStepMsg());
+		bankAcct.setName(getStepMsgName());
 		bankAcct.setDescription(getStepMsgLong());
 		bankAcct.setC_Bank_ID(getBank().get_ID());
 		bankAcct.setC_Currency_ID(getCurrency().get_ID());
@@ -1724,7 +1742,7 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		validate();
 		X_C_BankAccountDoc doc = new X_C_BankAccountDoc(getCtx(), 0, null);
-		doc.setName(getStepMsg());
+		doc.setName(getStepMsgName());
 		doc.setDescription(getStepMsgLong());
 		doc.setC_BankAccount_ID(getBankAcct().get_ID());
 		doc.setPaymentRule(X_C_BankAccountDoc.PAYMENTRULE_DirectDeposit);
@@ -1747,7 +1765,7 @@ public class IDempiereEnv implements AutoCloseable {
 
 		MBankStatement stmt = new MBankStatement(getCtx(), 0, get_TrxName());
 		stmt.setC_BankAccount_ID(getBankAcct().get_ID());
-		stmt.setName(getStepMsg());
+		stmt.setName(getStepMsgName());
 		stmt.setDescription(getStepMsgLong());
 		stmt.setDateAcct(getDate());
 		stmt.saveEx();
@@ -1786,8 +1804,7 @@ public class IDempiereEnv implements AutoCloseable {
 		T retval = getPO(0, type, trxName);
 		try {
 			Method method = type.getMethod("setName", String.class);
-			final String name = getStepMsg().length() > 60 ? getStepMsg().substring(0, 60) : getStepMsg();
-			method.invoke(retval, name);
+			method.invoke(retval, getStepMsgName());
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 		}
 		try {
@@ -1869,7 +1886,7 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		validate();
 		MPaySelection selection = new MPaySelection(getCtx(), 0, get_TrxName());
-		selection.setName(getStepMsg());
+		selection.setName(getStepMsgName());
 		selection.setDescription(getStepMsgLong());
 		selection.setC_BankAccount_ID(getBankAcct().get_ID());
 		selection.setPayDate(getDate());
@@ -2036,7 +2053,7 @@ public class IDempiereEnv implements AutoCloseable {
 		// return;
 
 		MOrg org = new MOrg(getCtx(), 0, get_TrxName());
-		org.setName(getStepMsg());
+		org.setName(getStepMsgName());
 		org.setDescription(getStepMsgLong());
 		org.saveEx();
 		setOrg(org);
@@ -2225,5 +2242,9 @@ public class IDempiereEnv implements AutoCloseable {
 		setProcessInfoParams(new ArrayList<ProcessInfoParameter>());
 		setProcessRecord_ID(0);
 		setProcessTable_ID(0);
+	}
+
+	public MAttachment getAttachmentFor(PO po) {
+		return MAttachment.get(getCtx(), po.get_Table_ID(), po.get_ID(), get_TrxName());
 	}
 }

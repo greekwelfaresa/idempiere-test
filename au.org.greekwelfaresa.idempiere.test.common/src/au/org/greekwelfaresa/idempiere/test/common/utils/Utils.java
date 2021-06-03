@@ -76,7 +76,7 @@ public class Utils {
 	}
 	
 	public static CLogger injectStaticMockLog(Class<?> clazz) {
-		CLogger mockLog = spy(getStaticField(clazz, "s_log"));
+		CLogger mockLog = spy((CLogger)getStaticField(clazz, "s_log"));
 		try {
 			setStaticField(clazz, "s_log", mockLog);
 		} catch (Exception e) {

@@ -422,6 +422,20 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * Retrieve the attachment for the given PO from within the current transaction.
+	 * 
+	 * {@link PO#getAttachment()} does not reference the current transaction of the PO
+	 * and so attachments created in an uncommitted SQL tx won't be visible. Use this
+	 * method instead to retrieve them. 
+	 * 
+	 * @param po The PO whose attachment is being retrieved.
+	 * @return The attachment for the given PO (if any).
+	 */
+	public MAttachment getAttachmentFor(PO po) {
+		return MAttachment.get(mCtx, po.get_Table_ID(), po.get_ID(), mTrxName);
+	}
+	
 	public int getC_Calendar_ID() {
 		MOrgInfo info = m_org.getInfo();
 		int C_Calendar_ID = info.getC_Calendar_ID();
@@ -2242,9 +2256,5 @@ public class IDempiereEnv implements AutoCloseable {
 		setProcessInfoParams(new ArrayList<ProcessInfoParameter>());
 		setProcessRecord_ID(0);
 		setProcessTable_ID(0);
-	}
-
-	public MAttachment getAttachmentFor(PO po) {
-		return MAttachment.get(getCtx(), po.get_Table_ID(), po.get_ID(), get_TrxName());
 	}
 }

@@ -74,6 +74,9 @@ import org.compiere.model.MProductBOM;
 import org.compiere.model.MProductCategory;
 import org.compiere.model.MProductPrice;
 import org.compiere.model.MRegion;
+import org.compiere.model.MResource;
+import org.compiere.model.MResourceAssignment;
+import org.compiere.model.MResourceType;
 import org.compiere.model.MTaxCategory;
 import org.compiere.model.MUOM;
 import org.compiere.model.MUser;
@@ -185,6 +188,9 @@ public class IDempiereEnv implements AutoCloseable {
 	private MBankStatementLine m_statementLine = null;
 	private MDepositBatch m_depositBatch = null;
 	private MDepositBatchLine m_depositBatchLine = null;
+	private MResourceAssignment m_resourceAssignment = null;
+	private MResourceType m_resourceType = null;
+	private MResource m_resource = null;
 	private int m_random = 0;
 	private boolean m_isError = false;
 	private String m_errorMsg = null;
@@ -812,6 +818,33 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_depositBatchLine = m_depositBatchLine;
 	}
 
+	public MResourceAssignment getResourceAssignment() {
+		return m_resourceAssignment == null ? (mParentEnv == null ? null : mParentEnv.getResourceAssignment())
+				: m_resourceAssignment;
+	}
+
+	public void setResourceAssignment(MResourceAssignment m_resourceAssignment) {
+		this.m_resourceAssignment = m_resourceAssignment;
+	}
+
+	public MResourceType getResourceType() {
+		return m_resourceType == null ? (mParentEnv == null ? null : mParentEnv.getResourceType())
+				: m_resourceType;
+	}
+
+	public void setResourceType(MResourceType m_resourceType) {
+		this.m_resourceType = m_resourceType;
+	}
+
+	public MResource getResource() {
+		return m_resource == null ? (mParentEnv == null ? null : mParentEnv.getResource())
+				: m_resource;
+	}
+
+	public void setResource(MResource m_resource) {
+		this.m_resource = m_resource;
+	}
+
 	public BigDecimal getQty() {
 		return m_qty;
 	}
@@ -1353,90 +1386,94 @@ public class IDempiereEnv implements AutoCloseable {
 		validate();
 
 		// use clearProduct() to create new product
-		if (getProduct() == null) {
+		//if (getProduct() == null) {
 			MProduct product = new MProduct(getCtx(), 0, null);
 			product.setAD_Org_ID(0);
 			product.setDescription(getStepMsgLong());
-			product.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
+			product.setName(getScenarioName());
 			product.setM_Product_Category_ID(getDefaultMProductCategoryID());
 			product.setC_TaxCategory_ID(getDefaultMTaxCategoryID());
-			product.setName(getScenarioName());
 			product.setProductType(X_M_Product.PRODUCTTYPE_Item);
+			product.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
 			product.saveEx();
 			registerPO(product);
 			setProduct(product);
 
-			if (getBP() != null) {
-				// create PO and SO price list entries
-				MPriceList spl = getPriceListSO();
-				MPriceList ppl = getPriceListPO();
-
-				Timestamp datePL = getDatePriceList();
-				if (datePL == null)
-					datePL = getDateOffset(getDate(), -365);
-
-				// see if price list version already exists
-				String sqlWhere = "M_PriceList_ID = ? and ValidFrom = ?";
-
-				MPriceListVersion splv = new Query(getCtx(), MPriceListVersion.Table_Name, sqlWhere, get_TrxName())
-						.setClient_ID().setParameters(spl.get_ID(), datePL).first();
-
-				MPriceListVersion pplv = new Query(getCtx(), MPriceListVersion.Table_Name, sqlWhere, get_TrxName())
-						.setClient_ID().setParameters(ppl.get_ID(), datePL).first();
-
-				if (pplv == null) {
-					// get bogus price list schema - required field
-					MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
-							"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
-									.setClient_ID().first();
-
-					pplv = new MPriceListVersion(getCtx(), 0, null);
-					pplv.setAD_Org_ID(0);
-					pplv.setName(datePL + "; IsSOTrx=N; " + getRandom());
-					pplv.setDescription(getStepMsgLong());
-					pplv.setM_PriceList_ID(ppl.get_ID());
-					pplv.setValidFrom(datePL);
-					pplv.setM_DiscountSchema_ID(schema.get_ID());
-					pplv.saveEx();
-					registerPO(pplv);
-				}
-
-				if (splv == null) {
-					// get bogus price list schema - required field
-					MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
-							"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
-									.setClient_ID().first();
-
-					splv = new MPriceListVersion(getCtx(), 0, null);
-					splv.setAD_Org_ID(0);
-					splv.setName(datePL + "; IsSOTrx=Y; " + getRandom());
-					splv.setDescription(getStepMsgLong());
-					splv.setM_PriceList_ID(spl.get_ID());
-					splv.setValidFrom(datePL);
-					splv.setM_DiscountSchema_ID(schema.get_ID());
-					splv.saveEx();
-					registerPO(splv);
-				}
-
-				MProductPrice pprice = new MProductPrice(getCtx(), pplv.get_ID(), getProduct().get_ID(), null);
-				pprice.setPriceLimit(getLimitPricePO());
-				pprice.setPriceStd(getStdPricePO());
-				pprice.setPriceList(getListPricePO());
-				pprice.saveEx();
-				registerPO(pprice);
-
-				MProductPrice sprice = new MProductPrice(getCtx(), splv.get_ID(), getProduct().get_ID(), null);
-				sprice.setPriceLimit(getLimitPriceSO());
-				sprice.setPriceStd(getStdPriceSO());
-				sprice.setPriceList(getListPriceSO());
-				sprice.saveEx();
-				registerPO(sprice);
-			}
+			addProductToPriceLists(product);
 			return product;
-		}
-		return null;
+//		}
+//		return null;
 	} // create product
 
+	public void addProductToPriceLists(MProduct product) {
+		if (getBP() != null) {
+			// create PO and SO price list entries
+			MPriceList spl = getPriceListSO();
+			MPriceList ppl = getPriceListPO();
+
+			Timestamp datePL = getDatePriceList();
+			if (datePL == null)
+				datePL = getDateOffset(getDate(), -365);
+
+			// see if price list version already exists
+			String sqlWhere = "M_PriceList_ID = ? and ValidFrom = ?";
+
+			MPriceListVersion splv = new Query(getCtx(), MPriceListVersion.Table_Name, sqlWhere, get_TrxName())
+					.setClient_ID().setParameters(spl.get_ID(), datePL).first();
+
+			MPriceListVersion pplv = new Query(getCtx(), MPriceListVersion.Table_Name, sqlWhere, get_TrxName())
+					.setClient_ID().setParameters(ppl.get_ID(), datePL).first();
+
+			if (pplv == null) {
+				// get bogus price list schema - required field
+				MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
+						"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
+								.setClient_ID().first();
+
+				pplv = new MPriceListVersion(getCtx(), 0, null);
+				pplv.setAD_Org_ID(0);
+				pplv.setName(datePL + "; IsSOTrx=N; " + getRandom());
+				pplv.setDescription(getStepMsgLong());
+				pplv.setM_PriceList_ID(ppl.get_ID());
+				pplv.setValidFrom(datePL);
+				pplv.setM_DiscountSchema_ID(schema.get_ID());
+				pplv.saveEx();
+				registerPO(pplv);
+			}
+
+			if (splv == null) {
+				// get bogus price list schema - required field
+				MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
+						"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
+								.setClient_ID().first();
+
+				splv = new MPriceListVersion(getCtx(), 0, null);
+				splv.setAD_Org_ID(0);
+				splv.setName(datePL + "; IsSOTrx=Y; " + getRandom());
+				splv.setDescription(getStepMsgLong());
+				splv.setM_PriceList_ID(spl.get_ID());
+				splv.setValidFrom(datePL);
+				splv.setM_DiscountSchema_ID(schema.get_ID());
+				splv.saveEx();
+				registerPO(splv);
+			}
+
+			MProductPrice pprice = new MProductPrice(getCtx(), pplv.get_ID(), product.get_ID(), null);
+			pprice.setPriceLimit(getLimitPricePO());
+			pprice.setPriceStd(getStdPricePO());
+			pprice.setPriceList(getListPricePO());
+			pprice.saveEx();
+			registerPO(pprice);
+
+			MProductPrice sprice = new MProductPrice(getCtx(), splv.get_ID(), product.get_ID(), null);
+			sprice.setPriceLimit(getLimitPriceSO());
+			sprice.setPriceStd(getStdPriceSO());
+			sprice.setPriceList(getListPriceSO());
+			sprice.saveEx();
+			registerPO(sprice);
+		}
+	}
+	
 	public MProductBOM createProductBOM(BigDecimal qty, MProduct parentProduct) {
 		validate();
 		if (isError())
@@ -1504,8 +1541,24 @@ public class IDempiereEnv implements AutoCloseable {
 		line.setAD_Org_ID(getOrg().get_ID());
 		line.setDescription(getStepMsgLong());
 		line.setC_Order_ID(order.get_ID());
-		line.setM_Product_ID(getProduct().get_ID());
-		line.setC_UOM_ID(getProduct().getC_UOM_ID());
+		MProduct product = getProduct();
+		line.setM_Product_ID(product.get_ID());
+		int resourceId = product.getS_Resource_ID();
+		if (resourceId != 0) {
+			MResource resource = getResource();
+			if (resource == null || resource.get_ID() != resourceId) {
+				resource = new MResource(getCtx(), resourceId, get_TrxName());
+				setResource(resource);
+				setResourceType(resource.getResourceType());
+			}
+			
+			MResourceAssignment ra = getResourceAssignment();
+			if (ra == null || ra.getS_Resource_ID() != resourceId) {
+				ra = createResourceAssignment();
+			}
+			line.setS_ResourceAssignment_ID(ra.get_ID());
+		}
+		line.setC_UOM_ID(product.getC_UOM_ID());
 		line.setM_AttributeSetInstance_ID(0);
 		if (getQty() == null || getQty().compareTo(Env.ZERO) == 0)
 			line.setQty(Env.ONE);
@@ -2126,6 +2179,84 @@ public class IDempiereEnv implements AutoCloseable {
 		return wh;
 	}
 
+	public MResourceType createResourceType() {
+		return createResourceType(MResourceType.class);
+	}
+
+	public <T extends MResourceType> T createResourceType(Class<T> type) {
+		validate();
+
+		// create resource type
+		T rt = createPO(type, null);
+		rt.setAD_Org_ID(0);
+		rt.setAllowUoMFractions(true);
+		rt.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
+		rt.setM_Product_Category_ID(getDefaultMProductCategoryID());
+		rt.setC_TaxCategory_ID(getDefaultMTaxCategoryID());
+		rt.saveEx();
+		registerPO(rt);
+		setResourceType(rt);
+		return rt;
+	} // create resourceType
+	
+	public MResource createResource() {
+		return createResource(MResource.class);
+	}
+
+	public <T extends MResource> T createResource(Class<T> type) {
+		validate();
+
+		// create resource type
+		T r = createPO(type, null);
+		r.setAD_Org_ID(0);
+		MResourceType rt = getResourceType();
+		if (rt == null) {
+			rt = createResourceType();
+		}
+		r.setS_ResourceType_ID(rt.get_ID());
+		r.setM_Warehouse_ID(getWarehouse().get_ID());
+		r.saveEx();
+		MProduct product = r.getProduct();
+		addProductToPriceLists(product);
+		registerPO(r);
+		setResource(r);
+		// ADempiere's MResource will automatically create the corresponding product for the resource.
+		setProduct(product);
+		return r;
+	} // create resourceType
+	
+	public MResourceAssignment createResourceAssignment() {
+		return createResourceAssignment(MResourceAssignment.class);
+	}
+
+	static BigDecimal SIXTY = new BigDecimal("60.0");
+	public <T extends MResourceAssignment> T createResourceAssignment(Class<T> type) {
+		validate();
+
+		// create resource type
+		T ra = createPO(type, get_TrxName());
+		ra.setAD_Org_ID(getOrg().get_ID());
+		MResource r = getResource();
+		if (r == null) {
+			r = createResource();
+		}
+		ra.setS_Resource_ID(r.get_ID());
+		ra.setAssignDateFrom(m_date);
+		GregorianCalendar c = new GregorianCalendar();
+		c.setTime(m_date);
+		
+		int hours = getQty().intValue();
+		int minutes = getQty().remainder(BD_ONE).multiply(SIXTY).intValue();
+		
+		c.add(Calendar.HOUR_OF_DAY, hours);
+		c.add(Calendar.MINUTE, minutes);
+		ra.setAssignDateTo(new Timestamp(c.getTimeInMillis()));
+		ra.setQty(getQty());
+		ra.saveEx();
+		setResourceAssignment(ra);
+		return ra;
+	} // create resource assignment
+	
 	public void createAndOpenAllFiscalYears() {
 		validate();
 

@@ -1850,7 +1850,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public <T extends PO> T getPO(int id, Class<T> type, String trxName) {
 		try {
 			Constructor<T> c = type.getConstructor(Properties.class, int.class, String.class);
-			T retval = c.newInstance(getCtx(), 0, trxName);
+			T retval = c.newInstance(getCtx(), id, trxName);
 			CLogger log = injectMockLog(retval);
 			logMap.put(System.identityHashCode(retval), log);
 			return retval;

@@ -191,6 +191,21 @@ public class Utils {
 	}
 	
 	// Convenience method to turn human-readable string into seconds past epoch.
+	public static long parseDateTimeLong(String ts) {
+		try {
+			return DT_FMT.parse(ts).getTime();
+		} catch (ParseException e) {
+			throw Exceptions.duck(e);
+		}
+	}
+
+	public static Timestamp parseDateTime(String ts) {
+		return ts == null ? null : new Timestamp(parseDateTimeLong(ts));
+	}
+	
+	public static DateFormat DT_FMT = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+	// Convenience method to turn human-readable string into seconds past epoch.
 	public static long parseTSLong(String ts) {
 	//			FMT.setTimeZone(TimeZone.getTimeZone("UTC"));
 		try {

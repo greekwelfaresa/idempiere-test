@@ -8,8 +8,11 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.FieldPosition;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +65,7 @@ public class Utils {
 			throw new IllegalStateException("Interrupted while for iDempiere to start", e);
 		}
 	}
-	
+
 	public static CLogger injectMockLog(Object object) {
 		CLogger orig = getField(object, "log");
 		CLogger mockLog = spy(orig);
@@ -73,9 +76,9 @@ public class Utils {
 		}
 		return mockLog;
 	}
-	
+
 	public static CLogger injectStaticMockLog(Class<?> clazz) {
-		CLogger mockLog = spy((CLogger)getStaticField(clazz, "s_log"));
+		CLogger mockLog = spy((CLogger) getStaticField(clazz, "s_log"));
 		try {
 			setStaticField(clazz, "s_log", mockLog);
 		} catch (Exception e) {
@@ -83,7 +86,7 @@ public class Utils {
 		}
 		return mockLog;
 	}
-	
+
 	public static void setField(Object o, String field, Object v) {
 		Field f = getField(o.getClass(), field);
 		f.setAccessible(true);
@@ -122,23 +125,23 @@ public class Utils {
 		Field f = getField(o.getClass(), fieldName);
 		f.setAccessible(true);
 		try {
-			return (T)f.get(o);
+			return (T) f.get(o);
 		} catch (IllegalAccessException e) {
 			throw Exceptions.duck(e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> T getStaticField(Class<?> clazz, String fieldName) {
 		Field f = getField(clazz, fieldName);
 		f.setAccessible(true);
 		try {
-			return (T)f.get(null);
+			return (T) f.get(null);
 		} catch (IllegalAccessException e) {
 			throw Exceptions.duck(e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <R> R invoke(Object object, String method) {
 		if (object == null) {
@@ -147,14 +150,14 @@ public class Utils {
 		try {
 			Method m = object.getClass().getDeclaredMethod(method);
 			m.setAccessible(true);
-			return (R)m.invoke(object);
+			return (R) m.invoke(object);
 		} catch (InvocationTargetException e) {
 			throw Exceptions.duck(e.getTargetException());
 		} catch (Exception e) {
 			throw Exceptions.duck(e);
-		} 
+		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <R> R invoke(Object object, String method, Class<?>[] parameterTypes, Object... args) {
 		if (object == null) {
@@ -163,14 +166,14 @@ public class Utils {
 		try {
 			Method m = object.getClass().getDeclaredMethod(method, parameterTypes);
 			m.setAccessible(true);
-			return (R)m.invoke(object, args);
+			return (R) m.invoke(object, args);
 		} catch (InvocationTargetException e) {
 			throw Exceptions.duck(e.getTargetException());
 		} catch (Exception e) {
 			throw Exceptions.duck(e);
-		} 
+		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <R> R invokeStatic(Class<?> clazz, String method, Class<?>[] parameterTypes, Object... args) {
 		if (clazz == null) {
@@ -182,14 +185,14 @@ public class Utils {
 			}
 			Method m = clazz.getDeclaredMethod(method, parameterTypes);
 			m.setAccessible(true);
-			return (R)m.invoke(null, args);
+			return (R) m.invoke(null, args);
 		} catch (InvocationTargetException e) {
 			throw Exceptions.duck(e.getTargetException());
 		} catch (Exception e) {
 			throw Exceptions.duck(e);
-		} 
+		}
 	}
-	
+
 	// Convenience method to turn human-readable string into seconds past epoch.
 	public static long parseDateTimeLong(String ts) {
 		try {
@@ -203,11 +206,9 @@ public class Utils {
 		return ts == null ? null : new Timestamp(parseDateTimeLong(ts));
 	}
 	
-	public static DateFormat DT_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
 	// Convenience method to turn human-readable string into seconds past epoch.
 	public static long parseTSLong(String ts) {
-	//			FMT.setTimeZone(TimeZone.getTimeZone("UTC"));
+		// FMT.setTimeZone(TimeZone.getTimeZone("UTC"));
 		try {
 			return FMT.parse(ts).getTime();
 		} catch (ParseException e) {
@@ -215,16 +216,35 @@ public class Utils {
 		}
 	}
 
+	static final String FORMAT1 = "yyyy-MM-dd";
+	static final String FORMAT2 = "yyyy-MM-dd HH:mm";
+
+	public static final DateFormat FMT = new SimpleDateFormat(FORMAT1);
+	public static final DateFormat DT_FMT = new DateFormat() {
+		private static final long serialVersionUID = 1L;
+		final SimpleDateFormat sdf2 = new SimpleDateFormat(FORMAT2);
+
+		@Override
+		public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Date parse(String source, ParsePosition pos) {
+			if (source.length() - pos.getIndex() == FORMAT1.length())
+				return FMT.parse(source, pos);
+			return sdf2.parse(source, pos);
+		}
+	};
+
 	public static Timestamp parseTS(String ts) {
 		return ts == null ? null : new Timestamp(parseTSLong(ts));
 	}
-
-	public static DateFormat FMT = new SimpleDateFormat("yyyy-MM-dd");
 
 	// iDempiere doesn't store milliseconds, so for our assertion to work we need
 	// to truncate our timestamp.
 	public static final Timestamp truncTS(long millis) {
 		long trunc = millis / 1000;
-		return new Timestamp(trunc  * 1000);
+		return new Timestamp(trunc * 1000);
 	}
 }

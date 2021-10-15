@@ -1,6 +1,6 @@
 package au.org.greekwelfaresa.idempiere.test.assertj;
 
-import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.timestamp;
+import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.parseDateTime;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -30,7 +30,7 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 		if (expected == null) {
 			expectedField = null;
 		} else if (expected instanceof String) {
-			expectedField = timestamp((String)expected);
+			expectedField = parseDateTime((String)expected);
 		} else if (expected instanceof Timestamp) {
 			expectedField = (Timestamp)expected;
 		} else {

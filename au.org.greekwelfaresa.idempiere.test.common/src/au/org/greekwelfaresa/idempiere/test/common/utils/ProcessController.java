@@ -180,8 +180,12 @@ public class ProcessController<P extends ProcessCall> {
 	}
 
 	public ProcessController<P> withPO(PO record) {
-		mTableID = record.get_Table_ID();
-		mRecordID = record.get_ID();
+		if (record == null) {
+			mTableID = mRecordID = 0;
+		} else {
+			mTableID = record.get_Table_ID();
+			mRecordID = record.get_ID();
+		}
 		return this;
 	}
 }

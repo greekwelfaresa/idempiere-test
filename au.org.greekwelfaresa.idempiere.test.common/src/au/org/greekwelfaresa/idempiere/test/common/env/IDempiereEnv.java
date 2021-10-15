@@ -496,7 +496,8 @@ public class IDempiereEnv implements AutoCloseable {
 		m_org = new MOrg(mCtx, mOrgId, mTrxName);
 		if (m_org.get_ID() == 0)
 			changeOrg();
-		m_user = new MUser(getCtx(), mUserId, mTrxName);
+//		m_user = new MUser(getCtx(), mUserId, mTrxName);
+		m_user = getUser();
 		// warehouse could have been set during changeOrg();
 		if (m_warehouse == null)
 			m_warehouse = new MWarehouse(getCtx(), mWarehouseId, mTrxName);
@@ -557,9 +558,12 @@ public class IDempiereEnv implements AutoCloseable {
 		Trx delTrx = Trx.get(delTrxName, true);
 		try {
 			for (PO po : mPOs) {
-				try {
-					po.deleteEx(true, delTrxName);
-				} catch (Exception e) {
+				System.err.println("deleting PO: " + po);
+				if (!po.is_new()) {
+					try {
+						po.deleteEx(true, delTrxName);
+					} catch (Exception e) {
+					}
 				}
 			}
 		} finally {
@@ -612,7 +616,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MUser getUser() {
-		return m_user;
+		return m_user == null ? (mParentEnv == null ? new MUser(getCtx(), mUserId, mTrxName) : mParentEnv.getUser()) : m_user;
 	}
 
 	public void setUser(MUser m_user) {
@@ -1003,7 +1007,7 @@ public class IDempiereEnv implements AutoCloseable {
 			appendErrorMsg("No Org");
 		}
 		if (m_user == null) {
-			appendErrorMsg("NO User");
+			appendErrorMsg("No User");
 		}
 		if (m_warehouse == null) {
 			appendErrorMsg("No Warehouse");
@@ -1307,6 +1311,7 @@ public class IDempiereEnv implements AutoCloseable {
 		user.saveEx();
 		registerPO(user);
 		setUser(user);
+		m_bp = bp;
 		return bp;
 		// }
 		// return null;
@@ -1879,7 +1884,6 @@ public class IDempiereEnv implements AutoCloseable {
 			method.invoke(retval, getStepMsgLong());
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 		}
-
 		return retval;
 	}
 

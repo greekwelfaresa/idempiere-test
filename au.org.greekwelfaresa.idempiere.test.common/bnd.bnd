@@ -3,10 +3,10 @@
 -buildpath: \
 	${junit},\
 	${mockito},\
-	org.adempiere.base;version=latest,\
-	javax.annotation-api;version=latest,\
-	osgi.annotation;version=latest,\
-	org.osgi.test.common;version=latest
+	org.adempiere.base,\
+	jakarta.annotation-api,\
+	osgi.annotation,\
+	org.osgi.test.common
 	
 Import-Package: \
 	${compiere.importpackage},\

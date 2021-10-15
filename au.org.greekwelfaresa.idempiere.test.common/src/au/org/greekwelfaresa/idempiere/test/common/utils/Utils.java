@@ -203,7 +203,7 @@ public class Utils {
 		return ts == null ? null : new Timestamp(parseDateTimeLong(ts));
 	}
 	
-	public static DateFormat DT_FMT = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+	public static DateFormat DT_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	// Convenience method to turn human-readable string into seconds past epoch.
 	public static long parseTSLong(String ts) {

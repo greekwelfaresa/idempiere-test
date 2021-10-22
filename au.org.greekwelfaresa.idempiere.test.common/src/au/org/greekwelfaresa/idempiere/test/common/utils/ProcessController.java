@@ -8,7 +8,9 @@ import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.setField;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -30,7 +32,7 @@ public class ProcessController<P extends ProcessCall> {
 
 	private Properties mCtx;
 	private P mProcess;
-	private List<ProcessInfoParameter> mParameters = new ArrayList<>();
+	private Map<String, ProcessInfoParameter> mParameters = new HashMap<>();
 	private String mTrxName;
 	private int mTableID = 0;
 	private int mRecordID = 0;
@@ -97,32 +99,32 @@ public class ProcessController<P extends ProcessCall> {
 	}
 
 	public ProcessController<P> withParameter(String name, Object parameter) {
-		mParameters.add(new ProcessInfoParameter(name, parameter, null, null, null));
+		mParameters.put(name, new ProcessInfoParameter(name, parameter, null, null, null));
 		return this;
 	}
 	
 	public ProcessController<P> withParameter(String name, Object parameter, Object parameter_To) {
-		mParameters.add(new ProcessInfoParameter(name, parameter, parameter_To, null, null));
+		mParameters.put(name, new ProcessInfoParameter(name, parameter, parameter_To, null, null));
 		return this;
 	}
 	
 	public ProcessController<P> withParameter(String name, Object parameter, Object parameter_To, String info) {
-		mParameters.add(new ProcessInfoParameter(name, parameter, parameter_To, info, null));
+		mParameters.put(name, new ProcessInfoParameter(name, parameter, parameter_To, info, null));
 		return this;
 	}
 	
 	public ProcessController<P> withParameter(String name, Object parameter, Object parameter_To, String info, String info_To) {
-		mParameters.add(new ProcessInfoParameter(name, parameter, parameter_To, info, info_To));
+		mParameters.put(name, new ProcessInfoParameter(name, parameter, parameter_To, info, info_To));
 		return this;
 	}
 	
 	public ProcessController<P> withParameter(ProcessInfoParameter param) {
-		mParameters.add(param);
+		mParameters.put(param.getParameterName(), param);
 		return this;
 	}
 	
 	public ProcessController<P> withParameters(ProcessInfoParameter... parameters) {
-		Stream.of(parameters).forEach(mParameters::add);
+		Stream.of(parameters).forEach(this::withParameter);
 		return this;
 	}
 	
@@ -137,7 +139,7 @@ public class ProcessController<P extends ProcessCall> {
 		
 		// Create a process info instance. This is a composite class containing the parameters.
 		mProcessInfo = new ProcessInfo(name, 0, mTableID, mRecordID);
-		ProcessInfoParameter[] parameters = mParameters.stream().toArray(ProcessInfoParameter[]::new);
+		ProcessInfoParameter[] parameters = mParameters.values().stream().toArray(ProcessInfoParameter[]::new);
 		mProcessInfo.setParameter(parameters);
 
 		if (mProcessPO != null) {

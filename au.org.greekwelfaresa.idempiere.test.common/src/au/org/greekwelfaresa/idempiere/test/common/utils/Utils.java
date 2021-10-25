@@ -12,6 +12,7 @@ import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -246,5 +247,18 @@ public class Utils {
 	public static final Timestamp truncTS(long millis) {
 		long trunc = millis / 1000;
 		return new Timestamp(trunc * 1000);
+	}
+
+	// The db backend does not preserve milliseconds. For exact comparisons,
+	// therefore,
+	// we need to truncate our timestamps to whole seconds.
+	public static Timestamp today() {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(System.currentTimeMillis());
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return new Timestamp(c.getTimeInMillis());
 	}
 }

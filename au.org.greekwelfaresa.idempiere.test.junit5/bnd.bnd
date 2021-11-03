@@ -3,9 +3,9 @@
 -buildpath: \
 	${junit},\
 	${mockito},\
-	au.org.greekwelfaresa.idempiere.test.common;version=snapshot,\
-	osgi.annotation;version=latest,\
-	org.osgi.test.common;version='0.10.0',\
-	org.adempiere.base;version='7.1.0'
+	au.org.greekwelfaresa.idempiere.test.common,\
+	osgi.annotation,\
+	org.osgi.test.common,\
+	org.adempiere.base
 
 Import-Package: *

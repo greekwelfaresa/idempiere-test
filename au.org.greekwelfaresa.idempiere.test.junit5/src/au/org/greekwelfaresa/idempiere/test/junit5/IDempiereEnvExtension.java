@@ -1,6 +1,5 @@
 package au.org.greekwelfaresa.idempiere.test.junit5;
 
-import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
 import static org.osgi.test.common.inject.FieldInjector.assertFieldIsOfType;
 import static org.osgi.test.common.inject.FieldInjector.assertParameterIsOfType;
 import static org.osgi.test.common.inject.FieldInjector.findAnnotatedFields;
@@ -17,8 +16,6 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -38,7 +35,7 @@ import au.org.greekwelfaresa.idempiere.test.common.env.IDempiereEnv;
 import org.adempiere.exceptions.AdempiereException;
 
 public class IDempiereEnvExtension
-		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback, ParameterResolver, LifecycleMethodExecutionExceptionHandler, TestExecutionExceptionHandler {
+		implements BeforeAllCallback, BeforeEachCallback, ParameterResolver, LifecycleMethodExecutionExceptionHandler, TestExecutionExceptionHandler {
 
 	@Override
 	public void handleBeforeAllMethodExecutionException(ExtensionContext context, Throwable throwable)
@@ -145,16 +142,6 @@ public class IDempiereEnvExtension
 		}
 	}
 
-	@Override
-	public void afterEach(ExtensionContext context) throws Exception {
-		cleanup(context);
-	}
-
-	@Override
-	public void afterAll(ExtensionContext context) throws Exception {
-		cleanup(context);
-	}
-
 	public static IDempiereEnv getIDempiereEnvOrComputeIfAbsent(ExtensionContext extensionContext,
 			InjectIDempiereEnv parameters) {
 		return getStore(extensionContext).getOrComputeIfAbsent(IDEMPIERE_ENV_KEY,
@@ -163,13 +150,6 @@ public class IDempiereEnvExtension
 
 	private static CloseableEnv getIDempiereEnv(ExtensionContext extensionContext) {
 		return getStore(extensionContext).get(IDEMPIERE_ENV_KEY, CloseableEnv.class);
-	}
-
-	public static void cleanup(ExtensionContext extensionContext) throws Exception {
-		CloseableEnv closeableEnv = getIDempiereEnv(extensionContext);
-		if (closeableEnv != null) {
-			closeableEnv.close();
-		}
 	}
 
 	@Override

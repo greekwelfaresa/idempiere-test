@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.adempiere.base.Core;
 import org.assertj.core.api.SoftAssertionsProvider;
@@ -123,7 +124,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	private String mClassName;
-	private String mName;
+	private String mMethodName;
 	private String mTrxName;
 	private Trx mTrx;
 	private boolean mAutoRollback;
@@ -322,7 +323,7 @@ public class IDempiereEnv implements AutoCloseable {
 		mAutoRollback = autoRollback;
 		mParentEnv = parent;
 		mClassName = className;
-		mName = methodName;
+		mMethodName = methodName;
 		this.softly = softly;
 		m_date = TimeUtil.trunc(date, TimeUtil.TRUNC_DAY);
 
@@ -473,20 +474,39 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 	}
 
+	static final Pattern CAMEL = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+	
+	String createShortTrxName() {
+		String[] classBits = mClassName.split("[.]");
+		
+		StringBuilder sb = new StringBuilder(60);
+		for (int i = 0; i < classBits.length - 1; i++) {
+			sb.append(classBits[i].charAt(0)).append('.');
+		}
+		String clazz = classBits[classBits.length - 1];
+		if (mMethodName == null) {
+			sb.append(clazz);
+		} else {
+			CAMEL.splitAsStream(clazz).forEach(x -> sb.append(x.charAt(0)));
+			sb.append('.');
+			sb.append(mMethodName);
+		}
+		return createShortTrxName(sb.toString());
+	}
+	
 	static String createShortTrxName(String base) {
 		return (base.length() > 54 ? base.substring(0, 54) : base) + "_" + UUID.randomUUID().toString().substring(0, 8);
 	}
 	
 	public void before() throws Exception {
 		if (mParentEnv == null) {
-			final String trxName = mClassName + (mName == null ? "" : ("." + mName));
-			mTrxName = createShortTrxName(trxName);
+			mTrxName = createShortTrxName();
 			mTrx = Trx.get(mTrxName, true);
 			ourTrx = true;
 		} else {
 			mTrxName = mParentEnv.mTrxName;
 			mTrx = mParentEnv.mTrx;
-			mSavePoint = mTrx.setSavepoint(createShortTrxName(mName));
+			mSavePoint = mTrx.setSavepoint(createShortTrxName(mMethodName));
 			mParentEnv.reloadPOs();
 			ourTrx = false;
 		}
@@ -525,7 +545,7 @@ public class IDempiereEnv implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		// System.err.println("Closing environment: " + this + ", " + mAutoRollback);
+//		System.err.println("Closing environment: " + this + ", " + mAutoRollback);
 		logMap.clear();
 		for (WeakReference<AutoCloseable> c : toBeClosed) {
 			try {
@@ -534,40 +554,45 @@ public class IDempiereEnv implements AutoCloseable {
 			}
 		}
 		if (mAutoRollback) {
+//			System.err.println(" ====> className: " + mClassName + ", " + mMethodName);
 			if (mSavePoint != null) {
+//				System.err.println("   rolling back save point: " + mSavePoint.getSavepointName());
 				mTrx.rollback(mSavePoint);
+				mSavePoint = null;
 			} else {
+//				System.err.println("  rolling back whole transaction");
 				mTrx.rollback(true);
-			}
-		} else {
-			mTrx.commit();
-		}
-		if (ourTrx) {
-			try {
-				mTrx.close();
-			} catch (Exception e) {
-			}
-		}
-
-		// Perhaps not the most efficient to use reverse(), but
-		// its the most readable. Usually the number of POs created
-		// will be small.
-		Collections.reverse(mPOs);
-		String trxName = mClassName + (mName == null ? "" : ('.' + mName)) + ".cleanup";
-		String delTrxName = Trx.createTrxName(trxName);
-		Trx delTrx = Trx.get(delTrxName, true);
-		try {
-			for (PO po : mPOs) {
-				System.err.println("deleting PO: " + po);
-				if (!po.is_new()) {
+				if (ourTrx) {
 					try {
-						po.deleteEx(true, delTrxName);
+//						System.err.println("   Closing rolled-back transaction: " + mTrx.getTrxName());
+						mTrx.close();
 					} catch (Exception e) {
 					}
 				}
 			}
-		} finally {
-			delTrx.commit();
+			
+			Collections.reverse(mPOs);
+			for (PO po : mPOs) {
+//				System.err.println("deleting PO: " + po + ", new? " + po.is_new() + ", trx: " + po.get_TrxName() + ", " + mTrx.getTrxName() + ", m: " + mTrxName);
+				if (!po.is_new() && !mTrx.getTrxName().equals(po.get_TrxName())) {
+//					System.err.println("===>actually deleting: " + po + ", " + mTrx.getTrxName());
+					try {
+						po.deleteEx(true);
+					} catch (Exception e) {
+						System.err.println("Error trying to delete: " + po + ", error: " + e);
+						e.printStackTrace();
+					}
+				}
+			}
+		} else {
+			mTrx.commit();
+			if (ourTrx) {
+				try {
+					System.err.println("Closing committed transaction: " + mTrx.getTrxName());
+					mTrx.close();
+				} catch (Exception e) {
+				}
+			}
 		}
 	}
 
@@ -588,11 +613,11 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	protected void setName(String name) {
-		mName = name;
+		mMethodName = name;
 	}
 
 	public String getName() {
-		return mName;
+		return mMethodName;
 	}
 
 	public String get_TrxName() {
@@ -616,7 +641,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MUser getUser() {
-		return m_user == null ? (mParentEnv == null ? new MUser(getCtx(), mUserId, mTrxName) : mParentEnv.getUser()) : m_user;
+		return m_user == null ? (mParentEnv == null ? new MUser(getCtx(), mUserId, null) : mParentEnv.getUser()) : m_user;
 	}
 
 	public void setUser(MUser m_user) {
@@ -1225,7 +1250,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public String getStepName() {
-		return mName;
+		return mMethodName;
 	}
 
 	public String getStepMsg() {

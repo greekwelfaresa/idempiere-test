@@ -1,0 +1,10 @@
+-include: ${workspace}/cnf/idempiere/includes/jdt.bnd, ${workspace}/cnf/idempiere/includes/idempiere.bnd
+
+-includepackage: au.org.greekwelfaresa.idempiere.migration
+
+-buildpath: \
+	org.osgi.service.component.annotations,\
+	org.adempiere.base,\
+	org.eclipse.osgi.services,\
+	org.osgi.test.common
+	

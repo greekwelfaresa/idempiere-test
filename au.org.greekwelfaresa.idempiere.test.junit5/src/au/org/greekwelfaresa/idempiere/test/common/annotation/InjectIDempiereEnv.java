@@ -8,10 +8,14 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import au.org.greekwelfaresa.idempiere.test.junit5.IDempiereEnvExtension;
+
 @Target({
 	FIELD, PARAMETER
 })
 @Retention(RUNTIME)
+@ExtendWith(IDempiereEnvExtension.class)
 @Documented
 public @interface InjectIDempiereEnv {
 	

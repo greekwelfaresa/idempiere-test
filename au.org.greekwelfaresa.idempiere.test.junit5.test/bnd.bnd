@@ -3,13 +3,11 @@
 -buildpath: \
 	${junit},\
 	${mockito},\
-	au.org.greekwelfaresa.idempiere.test.common;version=snapshot,\
-	osgi.annotation;version=latest,\
-	org.osgi.test.common;version='0.10.0',\
-	au.org.greekwelfaresa.idempiere.test.junit5;version=snapshot,\
-	junit-platform-testkit;version='1.6.2',\
-	org.adempiere.base;version='6.2.0',\
-	biz.aQute.tester.junit-platform
+	osgi.annotation,\
+	org.osgi.test.common,\
+	au.org.greekwelfaresa.idempiere.test.junit5,\
+	junit-platform-testkit,\
+	org.adempiere.base
 	
 Fragment-Host: au.org.greekwelfaresa.idempiere.test.junit5
 

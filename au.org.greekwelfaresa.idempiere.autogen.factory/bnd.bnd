@@ -1,4 +1,0 @@
--buildpath: \
-	au.org.greekwelfaresa.idempiere.test.assertj;version='1.0.0',\
-	au.org.greekwelfaresa.idempiere.test.assertj;version='1.0.0',\
-	biz.aQute.bndlib;version='5.2.0'

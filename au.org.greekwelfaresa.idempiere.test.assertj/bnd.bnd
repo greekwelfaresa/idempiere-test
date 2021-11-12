@@ -3,12 +3,13 @@
 -buildpath: \
 	${junit},\
 	${mockito},\
-	org.adempiere.base;version=latest,\
-	javax.annotation-api;version=latest,\
-	osgi.annotation;version=latest,\
-	au.org.greekwelfaresa.idempiere.test.common;version=snapshot
+	org.adempiere.base,\
+	jakarta.annotation-api,\
+	osgi.annotation,\
+	au.org.greekwelfaresa.idempiere.test.junit5,\
+	au.org.greekwelfaresa.idempiere.test.common
 
-Export-Package: au.org.greekwelfaresa.idempiere.test.assertj;version=1.0.0,au.org.greekwelfaresa.idempiere.test.assertj.*
+Export-Package: au.org.greekwelfaresa.idempiere.test.assertj,au.org.greekwelfaresa.idempiere.test.assertj.*
 
 Import-Package: \
 	${compiere.importpackage},\

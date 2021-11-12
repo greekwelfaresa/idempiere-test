@@ -113,7 +113,7 @@ import org.compiere.util.Trx;
 import org.osgi.test.common.exceptions.Exceptions;
 
 import au.org.greekwelfaresa.idempiere.test.common.annotation.InjectIDempiereEnv;
-import au.org.greekwelfaresa.idempiere.test.common.utils.ProcessController;
+import au.org.greekwelfaresa.idempiere.test.process.ProcessController;
 
 public class IDempiereEnv implements AutoCloseable {
 
@@ -1587,7 +1587,13 @@ public class IDempiereEnv implements AutoCloseable {
 				ra = createResourceAssignment();
 			}
 			line.setS_ResourceAssignment_ID(ra.get_ID());
-		}
+			setQty(ra.getQty());
+		} 
+	
+		if (getQty() == null || getQty().compareTo(Env.ZERO) == 0)
+			line.setQty(Env.ONE);
+		else
+			line.setQty(getQty());
 		line.setC_UOM_ID(product.getC_UOM_ID());
 		line.setM_AttributeSetInstance_ID(0);
 		if (getQty() == null || getQty().compareTo(Env.ZERO) == 0)

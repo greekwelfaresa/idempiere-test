@@ -1,4 +1,4 @@
-package au.org.greekwelfaresa.idempiere.test.common.utils;
+package au.org.greekwelfaresa.idempiere.test.process;
 
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.getField;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;

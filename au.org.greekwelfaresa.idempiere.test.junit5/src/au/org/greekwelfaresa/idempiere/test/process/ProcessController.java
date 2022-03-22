@@ -23,6 +23,7 @@ import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoLog;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.util.CLogger;
+import org.compiere.util.Env;
 import org.compiere.util.Trx;
 import org.osgi.test.common.exceptions.Exceptions;
 
@@ -41,6 +42,7 @@ public class ProcessController<P extends ProcessCall> {
 	private String mName;
 	private CLogger mLog;
 	private ProcessInfo mProcessInfo;
+	private IDempiereEnv mEnv;
 	
 	private static <X extends ProcessCall> X instantiate(Class<X> type)  {
 		try {
@@ -69,6 +71,7 @@ public class ProcessController<P extends ProcessCall> {
 		mTrx = env.getTrx();
 		mName = null;
 		mLog = injectMockLog(process);
+		mEnv = env;
 	}
 	
 	public P getProcess() {
@@ -133,9 +136,20 @@ public class ProcessController<P extends ProcessCall> {
 	}
 	
 	private void setupProcessInfo() {
-		final String name = mName != null ? mName : 
-			mProcessPO != null ? mProcessPO.getName() : "";
-			
+		if (mProcessPO == null) {
+			mProcessPO = new MProcess(mCtx, 0, null);
+			mProcessPO.setName(mName == null ? mEnv.getStepMsgName() : mName);
+			mProcessPO.setAD_Org_ID(mEnv.getOrg().get_ID());
+			// MProcess.afterSave() will attempt to create process access records for
+			// all the "automatic" roles. This includes the System user which is
+			// in a different AD_Client to what we are running in. Signal that
+			// this is safe.
+			PO.setCrossTenantSafe();
+			mProcessPO.saveEx();
+			PO.clearCrossTenantSafe();
+			mEnv.registerPO(mProcessPO);
+		}
+		final String name = mProcessPO.getName();
 		
 		// Create a process info instance. This is a composite class containing the parameters.
 		mProcessInfo = new ProcessInfo(name, 0, mTableID, mRecordID);
@@ -145,9 +159,12 @@ public class ProcessController<P extends ProcessCall> {
 		if (mProcessPO != null) {
 			// Create process instance (mainly for logging/sync purpose)
 			MPInstance mpi = new MPInstance(mCtx, 0, mTrxName);
-			mpi.setAD_Process_ID(mProcessPO.get_ID()); 
-			mpi.setRecord_ID(0);
+			// Bypass role check
+			mpi.set_ValueNoCheck(MPInstance.COLUMNNAME_AD_Process_ID, mProcessPO.get_ID()); 
+			//mpi.setAD_Process_ID(mProcessPO.get_ID()); 
+			mpi.setRecord_ID(mRecordID);
 			mpi.saveEx();
+			mEnv.registerPO(mpi);
 			mProcessInfo.setAD_PInstance_ID(mpi.get_ID());
 		}
 	}
@@ -166,6 +183,7 @@ public class ProcessController<P extends ProcessCall> {
 		setField(mProcess, "m_ctx", mCtx);
 		setField(mProcess, "m_pi", mProcessInfo);
 		setField(mProcess, "m_trx", mTrx);
+		setField(mProcess, "listEntryLog", null);
 		invoke(mProcess, "prepare");
 	}
 
@@ -178,6 +196,7 @@ public class ProcessController<P extends ProcessCall> {
 		setField(mProcess, "m_ctx", mCtx);
 		setField(mProcess, "m_pi", mProcessInfo);
 		setField(mProcess, "m_trx", mTrx);
+		setField(mProcess, "listEntryLog", null);
 		return invoke(mProcess, "doIt");
 	}
 

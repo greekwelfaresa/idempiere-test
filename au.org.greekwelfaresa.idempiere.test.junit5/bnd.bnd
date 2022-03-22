@@ -6,6 +6,9 @@
 	osgi.annotation,\
 	org.osgi.test.common,\
 	org.adempiere.base,\
-	au.org.greekwelfaresa.idempiere.test.common
+	au.org.greekwelfaresa.idempiere.test.common,\
+	org.osgi.service.event,\
+	org.osgi.service.component.annotations,\
+	osgi.core
 
 Import-Package: *

@@ -3,6 +3,10 @@ package au.org.greekwelfaresa.idempiere.test.common.env;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ONE;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ZERO;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
+import static org.adempiere.base.event.IEventTopics.PO_AFTER_CHANGE;
+import static org.adempiere.base.event.IEventTopics.PO_AFTER_DELETE;
+import static org.adempiere.base.event.IEventTopics.PO_AFTER_NEW;
+import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.timestamp;
 
@@ -19,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +36,11 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.adempiere.base.Core;
+import org.adempiere.base.event.IEventTopics;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.Adempiere;
 import org.compiere.model.MAcctSchema;
+import org.compiere.model.MActivity;
 import org.compiere.model.MAttachment;
 import org.compiere.model.MBPBankAccount;
 import org.compiere.model.MBPartner;
@@ -43,6 +50,7 @@ import org.compiere.model.MBankAccount;
 import org.compiere.model.MBankStatement;
 import org.compiere.model.MBankStatementLine;
 import org.compiere.model.MCalendar;
+import org.compiere.model.MCampaign;
 import org.compiere.model.MClient;
 import org.compiere.model.MClientInfo;
 import org.compiere.model.MCountry;
@@ -74,6 +82,7 @@ import org.compiere.model.MProduct;
 import org.compiere.model.MProductBOM;
 import org.compiere.model.MProductCategory;
 import org.compiere.model.MProductPrice;
+import org.compiere.model.MProject;
 import org.compiere.model.MRegion;
 import org.compiere.model.MResource;
 import org.compiere.model.MResourceAssignment;
@@ -110,10 +119,18 @@ import org.compiere.util.Language;
 import org.compiere.util.Msg;
 import org.compiere.util.TimeUtil;
 import org.compiere.util.Trx;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
+import org.osgi.test.common.dictionary.Dictionaries;
 import org.osgi.test.common.exceptions.Exceptions;
 
 import au.org.greekwelfaresa.idempiere.test.common.annotation.InjectIDempiereEnv;
 import au.org.greekwelfaresa.idempiere.test.process.ProcessController;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 public class IDempiereEnv implements AutoCloseable {
 
@@ -173,6 +190,9 @@ public class IDempiereEnv implements AutoCloseable {
 	private String m_paymentRule = null;
 	private MOrder m_order = null;
 	private MOrderLine m_orderLine = null;
+	private MProject m_project = null;
+	private MActivity m_activity = null;
+	private MCampaign m_campaign = null;
 	private MInOut m_inOut = null;
 	private MInOutLine m_inOutLine = null;
 	private MInvoice m_invoice = null;
@@ -196,7 +216,9 @@ public class IDempiereEnv implements AutoCloseable {
 	private boolean m_isError = false;
 	private String m_errorMsg = null;
 	private Random m_rand = null;
-
+	private int m_ue1 = 0;
+	private int m_ue2 = 0;
+	
 	private String m_process_UU = null;
 	private List<ProcessInfoParameter> m_processInfoParams = new ArrayList<ProcessInfoParameter>();
 	private int m_processTable_ID = 0;
@@ -337,6 +359,7 @@ public class IDempiereEnv implements AutoCloseable {
 		mCtx.setProperty(Env.AD_ROLE_ID, String.valueOf(mRoleId));
 		mCtx.setProperty(Env.M_WAREHOUSE_ID, String.valueOf(mWarehouseId));
 		waitForAdempiereStart();
+
 	}
 
 	// Saves the given pos in the context of the current transaction.
@@ -432,9 +455,9 @@ public class IDempiereEnv implements AutoCloseable {
 	/**
 	 * Retrieve the attachment for the given PO from within the current transaction.
 	 * 
-	 * {@link PO#getAttachment()} does not reference the current transaction of the PO
-	 * and so attachments created in an uncommitted SQL tx won't be visible. Use this
-	 * method instead to retrieve them. 
+	 * {@link PO#getAttachment()} does not reference the current transaction of the
+	 * PO and so attachments created in an uncommitted SQL tx won't be visible. Use
+	 * this method instead to retrieve them.
 	 * 
 	 * @param po The PO whose attachment is being retrieved.
 	 * @return The attachment for the given PO (if any).
@@ -442,7 +465,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public MAttachment getAttachmentFor(PO po) {
 		return MAttachment.get(mCtx, po.get_Table_ID(), po.get_ID(), mTrxName);
 	}
-	
+
 	public int getC_Calendar_ID() {
 		MOrgInfo info = m_org.getInfo();
 		int C_Calendar_ID = info.getC_Calendar_ID();
@@ -475,10 +498,10 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	static final Pattern CAMEL = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
-	
+
 	String createShortTrxName() {
 		String[] classBits = mClassName.split("[.]");
-		
+
 		StringBuilder sb = new StringBuilder(60);
 		for (int i = 0; i < classBits.length - 1; i++) {
 			sb.append(classBits[i].charAt(0)).append('.');
@@ -493,11 +516,11 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		return createShortTrxName(sb.toString());
 	}
-	
+
 	static String createShortTrxName(String base) {
 		return (base.length() > 54 ? base.substring(0, 54) : base) + "_" + UUID.randomUUID().toString().substring(0, 8);
 	}
-	
+
 	public void before() throws Exception {
 		if (mParentEnv == null) {
 			mTrxName = createShortTrxName();
@@ -543,8 +566,20 @@ public class IDempiereEnv implements AutoCloseable {
 		setRoutingNoSource(() -> String.format("%06d", randInt(0, 999999)));
 	}
 
+	ServiceRegistration<EventHandler> reg;
+
+	List<PORecorder> recorders = new ArrayList<>(); 
+	
+	public PORecorder startRecorder() {
+		PORecorder recorder = new PORecorder(mTrxName);
+		recorders.add(recorder);
+		return recorder;
+	}
+
 	@Override
 	public void close() throws Exception {
+		recorders.forEach(PORecorder::close);
+		recorders.clear();
 //		System.err.println("Closing environment: " + this + ", " + mAutoRollback);
 		logMap.clear();
 		for (WeakReference<AutoCloseable> c : toBeClosed) {
@@ -570,7 +605,7 @@ public class IDempiereEnv implements AutoCloseable {
 					}
 				}
 			}
-			
+
 			Collections.reverse(mPOs);
 			for (PO po : mPOs) {
 //				System.err.println("deleting PO: " + po + ", new? " + po.is_new() + ", trx: " + po.get_TrxName() + ", " + mTrx.getTrxName() + ", m: " + mTrxName);
@@ -641,7 +676,8 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MUser getUser() {
-		return m_user == null ? (mParentEnv == null ? new MUser(getCtx(), mUserId, null) : mParentEnv.getUser()) : m_user;
+		return m_user == null ? (mParentEnv == null ? new MUser(getCtx(), mUserId, null) : mParentEnv.getUser())
+				: m_user;
 	}
 
 	public void setUser(MUser m_user) {
@@ -738,6 +774,58 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public void setOrderLine(MOrderLine m_poLine) {
 		this.m_orderLine = m_poLine;
+	}
+
+	public MProject getProject() {
+		return m_project == null ? (mParentEnv == null ? null : mParentEnv.getProject()) : m_project;
+	}
+
+	public void setProject(MProject m_project) {
+		this.m_project = m_project;
+	}
+
+	public MActivity getActivity() {
+		return m_activity == null ? (mParentEnv == null ? null : mParentEnv.getActivity()) : m_activity;
+	}
+
+	public void setActivity(MActivity m_activity) {
+		this.m_activity = m_activity;
+	}
+
+	public MCampaign getCampaign() {
+		return m_campaign == null ? (mParentEnv == null ? null : mParentEnv.getCampaign()) : m_campaign;
+	}
+
+	public void setCampaign(MCampaign m_campaign) {
+		this.m_campaign = m_campaign;
+	}
+
+	public int getUserElement1() {
+		return m_ue1 == 0 ? (mParentEnv == null ? 0 : mParentEnv.getUserElement1()) : m_ue1;
+	}
+
+	public int setUserElement1() {
+		setRandom();
+		setUserElement1(getRandom());
+		return getUserElement1();
+	}
+
+	public void setUserElement1(int ue1) {
+		this.m_ue1 = ue1;
+	}
+
+	public int getUserElement2() {
+		return m_ue2 == 0 ? (mParentEnv == null ? 0 : mParentEnv.getUserElement2()) : m_ue2;
+	}
+
+	public int setUserElement2() {
+		setRandom();
+		setUserElement2(getRandom());
+		return getUserElement2();
+	}
+
+	public void setUserElement2(int ue2) {
+		this.m_ue2 = ue2;
 	}
 
 	public MInOut getInOut() {
@@ -857,8 +945,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MResourceType getResourceType() {
-		return m_resourceType == null ? (mParentEnv == null ? null : mParentEnv.getResourceType())
-				: m_resourceType;
+		return m_resourceType == null ? (mParentEnv == null ? null : mParentEnv.getResourceType()) : m_resourceType;
 	}
 
 	public void setResourceType(MResourceType m_resourceType) {
@@ -866,8 +953,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MResource getResource() {
-		return m_resource == null ? (mParentEnv == null ? null : mParentEnv.getResource())
-				: m_resource;
+		return m_resource == null ? (mParentEnv == null ? null : mParentEnv.getResource()) : m_resource;
 	}
 
 	public void setResource(MResource m_resource) {
@@ -1259,17 +1345,25 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	/**
-	 * Version of getStepMsg() that takes the last 60 chars
-	 * of the raw step msg.
+	 * Version of getStepMsg() that takes the last 60 chars of the raw step msg.
+	 * 
 	 * @return
 	 */
 	public String getStepMsgName() {
-		final String stepMsg = getStepMsg();
+		return getStepMsgName("");
+	}
+	
+	public String getStepMsgNameWithHash() {
+		return getStepMsgName(String.valueOf(getRandom()));
+	}
+	
+	public String getStepMsgName(String hash) {
+		final String stepMsg = getStepMsg() + (hash == null || hash.equals("") ? "" : "_" + hash);
 		final int length = stepMsg.length();
 		final String name = length > 60 ? stepMsg.substring(length - 60, length) : stepMsg;
 		return name;
 	}
-	
+
 	public String getStepMsgLong() {
 		return mTrxName;
 	}
@@ -1376,7 +1470,7 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		return null;
 	}
-	
+
 	public String createRoutingNo() {
 		return m_routingNoSource.get();
 	}
@@ -1416,21 +1510,21 @@ public class IDempiereEnv implements AutoCloseable {
 		validate();
 
 		// use clearProduct() to create new product
-		//if (getProduct() == null) {
-			MProduct product = new MProduct(getCtx(), 0, null);
-			product.setAD_Org_ID(0);
-			product.setDescription(getStepMsgLong());
-			product.setName(getScenarioName());
-			product.setM_Product_Category_ID(getDefaultMProductCategoryID());
-			product.setC_TaxCategory_ID(getDefaultMTaxCategoryID());
-			product.setProductType(X_M_Product.PRODUCTTYPE_Item);
-			product.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
-			product.saveEx();
-			registerPO(product);
-			setProduct(product);
+		// if (getProduct() == null) {
+		MProduct product = new MProduct(getCtx(), 0, null);
+		product.setAD_Org_ID(0);
+		product.setDescription(getStepMsgLong());
+		product.setName(getScenarioName());
+		product.setM_Product_Category_ID(getDefaultMProductCategoryID());
+		product.setC_TaxCategory_ID(getDefaultMTaxCategoryID());
+		product.setProductType(X_M_Product.PRODUCTTYPE_Item);
+		product.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
+		product.saveEx();
+		registerPO(product);
+		setProduct(product);
 
-			addProductToPriceLists(product);
-			return product;
+		addProductToPriceLists(product);
+		return product;
 //		}
 //		return null;
 	} // create product
@@ -1503,7 +1597,7 @@ public class IDempiereEnv implements AutoCloseable {
 			registerPO(sprice);
 		}
 	}
-	
+
 	public MProductBOM createProductBOM(BigDecimal qty, MProduct parentProduct) {
 		validate();
 		if (isError())
@@ -1563,6 +1657,17 @@ public class IDempiereEnv implements AutoCloseable {
 		order.setBPartner(getBP());
 		order.setM_PriceList_ID(getDocType().isSOTrx() ? getPriceListSO().get_ID() : getPriceListPO().get_ID());
 		order.setM_Warehouse_ID(getWarehouse().get_ID());
+		if (getProject() != null) {
+			order.setC_Project_ID(getProject().get_ID());
+		}
+		if (getActivity() != null) {
+			order.setC_Activity_ID(getActivity().get_ID());
+		}
+		if (getCampaign() != null) {
+			order.setC_Campaign_ID(getCampaign().get_ID());
+		}
+		order.setUser1_ID(getUserElement1());
+		order.setUser2_ID(getUserElement2());
 		order.saveEx();
 		setOrder(order);
 
@@ -1581,15 +1686,18 @@ public class IDempiereEnv implements AutoCloseable {
 				setResource(resource);
 				setResourceType(resource.getResourceType());
 			}
-			
+
 			MResourceAssignment ra = getResourceAssignment();
 			if (ra == null || ra.getS_Resource_ID() != resourceId) {
 				ra = createResourceAssignment();
 			}
+		}
+		MResourceAssignment ra = getResourceAssignment();
+		if (ra != null) {
 			line.setS_ResourceAssignment_ID(ra.get_ID());
 			setQty(ra.getQty());
-		} 
-	
+		}
+		
 		if (getQty() == null || getQty().compareTo(Env.ZERO) == 0)
 			line.setQty(Env.ONE);
 		else
@@ -1617,6 +1725,37 @@ public class IDempiereEnv implements AutoCloseable {
 		order.saveEx();
 		return order;
 	} // create order
+
+	public MProject createProject() {
+		if (getCurrency() == null) {
+			appendErrorMsg("currency is null");
+		}
+
+		validate();
+
+		MProject retval = createPO(MProject.class);
+		retval.setC_Currency_ID(getCurrency().get_ID());
+		retval.saveEx();
+		setProject(retval);
+
+		return retval;
+	}
+
+	public MActivity createActivity() {
+		MActivity retval = createPO(MActivity.class);
+		retval.saveEx();
+		setActivity(retval);
+
+		return retval;
+	}
+
+	public MCampaign createCampaign() {
+		MCampaign retval = createPO(MCampaign.class);
+		retval.saveEx();
+		setCampaign(retval);
+
+		return retval;
+	}
 
 	public MInOut createInOut() {
 		validate();
@@ -2194,28 +2333,38 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MWarehouse createWarehouse() {
+		return createWarehouse(get_TrxName());
+	}
+	
+	public MWarehouse createWarehouse(String trxName) {
 		// do not validate this method. It is used to update the VO so that it can pass
 		// validation
 		// validate();
 		// if (isError())
 		// return;
 
-		MWarehouse wh = new MWarehouse(getCtx(), 0, get_TrxName());
+		MWarehouse wh = new MWarehouse(getCtx(), 0, trxName);
 		wh.setAD_Org_ID(getOrg().get_ID());
-		wh.setName(getStepMsg());
+		wh.setName(getStepMsgNameWithHash());
 		wh.setDescription(getStepMsgLong());
 		if (getOrg().getInfo() != null)
 			wh.setC_Location_ID(getOrg().getInfo().getC_Location_ID());
 		wh.saveEx();
 		setWarehouse(wh);
+		registerPO(wh);
 		MLocator loc = new MLocator(getWarehouse(), String.valueOf(getRandom()));
 		loc.setIsDefault(true);
 		loc.saveEx();
+		registerPO(loc);
 		return wh;
 	}
 
 	public MResourceType createResourceType() {
 		return createResourceType(MResourceType.class);
+	}
+
+	public MUOM getUOM(String name) {
+		return MUOM.get(getCtx(), name, get_TrxName());
 	}
 
 	public <T extends MResourceType> T createResourceType(Class<T> type) {
@@ -2233,7 +2382,7 @@ public class IDempiereEnv implements AutoCloseable {
 		setResourceType(rt);
 		return rt;
 	} // create resourceType
-	
+
 	public MResource createResource() {
 		return createResource(MResource.class);
 	}
@@ -2255,16 +2404,18 @@ public class IDempiereEnv implements AutoCloseable {
 		addProductToPriceLists(product);
 		registerPO(r);
 		setResource(r);
-		// ADempiere's MResource will automatically create the corresponding product for the resource.
+		// ADempiere's MResource will automatically create the corresponding product for
+		// the resource.
 		setProduct(product);
 		return r;
 	} // create resourceType
-	
+
 	public MResourceAssignment createResourceAssignment() {
 		return createResourceAssignment(MResourceAssignment.class);
 	}
 
 	static BigDecimal SIXTY = new BigDecimal("60.0");
+
 	public <T extends MResourceAssignment> T createResourceAssignment(Class<T> type) {
 		validate();
 
@@ -2279,10 +2430,10 @@ public class IDempiereEnv implements AutoCloseable {
 		ra.setAssignDateFrom(m_date);
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(m_date);
-		
+
 		int hours = getQty().intValue();
 		int minutes = getQty().remainder(BD_ONE).multiply(SIXTY).intValue();
-		
+
 		c.add(Calendar.HOUR_OF_DAY, hours);
 		c.add(Calendar.MINUTE, minutes);
 		ra.setAssignDateTo(new Timestamp(c.getTimeInMillis()));
@@ -2291,7 +2442,7 @@ public class IDempiereEnv implements AutoCloseable {
 		setResourceAssignment(ra);
 		return ra;
 	} // create resource assignment
-	
+
 	public void createAndOpenAllFiscalYears() {
 		validate();
 

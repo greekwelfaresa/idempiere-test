@@ -147,26 +147,6 @@ public abstract class AbstractAD_ClientAssert<SELF extends AbstractAD_ClientAsse
 		return myself;
 	}
 
-	public SELF isServerEMail()
-	{
-		isNotNull();
-		if (!actual.isServerEMail()) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto be ServerEMail\nbut it was not",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF isNotServerEMail()
-	{
-		isNotNull();
-		if (actual.isServerEMail()) {
-			failWithMessage("\nExpecting PO: \n  <%s>\n to not be ServerEMail\nbut it was",
-				getPODescription());
-		}
-		return myself;
-	}
-
 	public SELF isSmtpAuthorization()
 	{
 		isNotNull();

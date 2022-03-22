@@ -311,14 +311,6 @@ public abstract class AbstractM_InOutLineAssert<SELF extends AbstractM_InOutLine
 	}
 
 
-	public SELF hasQtyOverReceipt(Object expected)
-	{
-		isNotNull();
-		bdAssert("QtyOverReceipt", actual.getQtyOverReceipt(), expected);
-		return myself;
-	}
-
-
 	public SELF hasRef_InOutLine_ID(int expected)
 	{
 		isNotNull();

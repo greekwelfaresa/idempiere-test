@@ -4,6 +4,8 @@ package au.org.greekwelfaresa.idempiere.test.assertj.c_orderline;
 import au.org.greekwelfaresa.idempiere.test.assertj.po.AbstractPOAssert;
 import java.util.Objects;
 import javax.annotation.Generated;
+
+import org.compiere.model.MProduct;
 import org.compiere.model.X_C_OrderLine;
 
 /** Generated assertion class for C_OrderLine
@@ -311,8 +313,10 @@ public abstract class AbstractC_OrderLineAssert<SELF extends AbstractC_OrderLine
 		isNotNull();
 		int actualField = actual.getM_Product_ID();
 		if (expected != actualField) {
+			MProduct actualProduct = new MProduct(actual.getCtx(), actualField, actual.get_TrxName());
+			MProduct expectedProduct = new MProduct(actual.getCtx(), expected, actual.get_TrxName());
 			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have M_Product_ID: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
+				getPODescription(), expectedProduct, actualProduct);
 		}
 		return myself;
 	}

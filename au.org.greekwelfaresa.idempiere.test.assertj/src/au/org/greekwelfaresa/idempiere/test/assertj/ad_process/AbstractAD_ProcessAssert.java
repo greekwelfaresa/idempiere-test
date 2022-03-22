@@ -235,26 +235,6 @@ public abstract class AbstractAD_ProcessAssert<SELF extends AbstractAD_ProcessAs
 		return myself;
 	}
 
-	public SELF isServerProcess()
-	{
-		isNotNull();
-		if (!actual.isServerProcess()) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto be ServerProcess\nbut it was not",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF isNotServerProcess()
-	{
-		isNotNull();
-		if (actual.isServerProcess()) {
-			failWithMessage("\nExpecting PO: \n  <%s>\n to not be ServerProcess\nbut it was",
-				getPODescription());
-		}
-		return myself;
-	}
-
 	public SELF hasJasperReport(String expected)
 	{
 		isNotNull();

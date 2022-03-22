@@ -241,17 +241,6 @@ public abstract class AbstractAD_Package_Exp_DetailAssert<SELF extends AbstractA
 		return myself;
 	}
 
-	public SELF hasAD_Workbench_ID(int expected)
-	{
-		isNotNull();
-		int actualField = actual.getAD_Workbench_ID();
-		if (expected != actualField) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have AD_Workbench_ID: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasAD_Workflow_ID(int expected)
 	{
 		isNotNull();

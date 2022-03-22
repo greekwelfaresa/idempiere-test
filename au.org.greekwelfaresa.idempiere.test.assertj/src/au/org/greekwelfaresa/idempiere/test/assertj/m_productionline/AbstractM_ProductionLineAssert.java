@@ -176,25 +176,6 @@ public abstract class AbstractM_ProductionLineAssert<SELF extends AbstractM_Prod
 		return myself;
 	}
 
-	public SELF hasProductType(String expected)
-	{
-		isNotNull();
-		String actualField = actual.getProductType();
-		if (!Objects.equals(expected, actualField)) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have ProductType: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasQtyAvailable(Object expected)
-	{
-		isNotNull();
-		bdAssert("QtyAvailable", actual.getQtyAvailable(), expected);
-		return myself;
-	}
-
-
 	public SELF hasQtyUsed(Object expected)
 	{
 		isNotNull();

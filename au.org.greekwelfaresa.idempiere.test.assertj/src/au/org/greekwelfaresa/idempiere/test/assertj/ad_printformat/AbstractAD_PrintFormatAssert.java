@@ -120,28 +120,6 @@ public abstract class AbstractAD_PrintFormatAssert<SELF extends AbstractAD_Print
 		return myself;
 	}
 
-	public SELF hasArgs(String expected)
-	{
-		isNotNull();
-		String actualField = actual.getArgs();
-		if (!Objects.equals(expected, actualField)) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have Args: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
-	public SELF hasClassname(String expected)
-	{
-		isNotNull();
-		String actualField = actual.getClassname();
-		if (!Objects.equals(expected, actualField)) {
-			failWithActualExpectedAndMessage(actualField, expected, "\nExpecting PO: \n  <%s>\n to have Classname: <%s>\nbut it was: <%s>",
-				getPODescription(), expected, actualField);
-		}
-		return myself;
-	}
-
 	public SELF hasDescription(String expected)
 	{
 		isNotNull();

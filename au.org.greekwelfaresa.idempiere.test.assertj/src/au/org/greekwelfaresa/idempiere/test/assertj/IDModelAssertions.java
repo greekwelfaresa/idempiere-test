@@ -262,14 +262,6 @@ public class IDModelAssertions {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_ctxhelpsuggestion.AD_CtxHelpSuggestionAssert(a);
 	}
 
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_desktop.AD_DesktopAssert assertThat(org.compiere.model.X_AD_Desktop a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_desktop.AD_DesktopAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_desktopworkbench.AD_DesktopWorkbenchAssert assertThat(org.compiere.model.X_AD_DesktopWorkbench a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_desktopworkbench.AD_DesktopWorkbenchAssert(a);
-	}
-
 	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_document_action_access.AD_Document_Action_AccessAssert assertThat(org.compiere.model.X_AD_Document_Action_Access a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_document_action_access.AD_Document_Action_AccessAssert(a);
 	}
@@ -900,14 +892,6 @@ public class IDModelAssertions {
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_wizardprocess.AD_WizardProcessAssert assertThat(org.compiere.model.X_AD_WizardProcess a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_wizardprocess.AD_WizardProcessAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_workbench.AD_WorkbenchAssert assertThat(org.compiere.model.X_AD_Workbench a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_workbench.AD_WorkbenchAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_workbenchwindow.AD_WorkbenchWindowAssert assertThat(org.compiere.model.X_AD_WorkbenchWindow a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ad_workbenchwindow.AD_WorkbenchWindowAssert(a);
 	}
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.ad_workflow.AD_WorkflowAssert assertThat(org.compiere.model.X_AD_Workflow a) {
@@ -2648,33 +2632,5 @@ public class IDModelAssertions {
 
 	public static au.org.greekwelfaresa.idempiere.test.assertj.u_webmenu.U_WebMenuAssert assertThat(org.compiere.model.X_U_WebMenu a) {
 		return new au.org.greekwelfaresa.idempiere.test.assertj.u_webmenu.U_WebMenuAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservice.WS_WebServiceAssert assertThat(org.compiere.model.X_WS_WebService a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservice.WS_WebServiceAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservice_para.WS_WebService_ParaAssert assertThat(org.compiere.model.X_WS_WebService_Para a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservice_para.WS_WebService_ParaAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicefieldinput.WS_WebServiceFieldInputAssert assertThat(org.compiere.model.X_WS_WebServiceFieldInput a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicefieldinput.WS_WebServiceFieldInputAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicefieldoutput.WS_WebServiceFieldOutputAssert assertThat(org.compiere.model.X_WS_WebServiceFieldOutput a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicefieldoutput.WS_WebServiceFieldOutputAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicemethod.WS_WebServiceMethodAssert assertThat(org.compiere.model.X_WS_WebServiceMethod a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicemethod.WS_WebServiceMethodAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicetype.WS_WebServiceTypeAssert assertThat(org.compiere.model.X_WS_WebServiceType a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicetype.WS_WebServiceTypeAssert(a);
-	}
-
-	public static au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicetypeaccess.WS_WebServiceTypeAccessAssert assertThat(org.compiere.model.X_WS_WebServiceTypeAccess a) {
-		return new au.org.greekwelfaresa.idempiere.test.assertj.ws_webservicetypeaccess.WS_WebServiceTypeAccessAssert(a);
 	}
 }

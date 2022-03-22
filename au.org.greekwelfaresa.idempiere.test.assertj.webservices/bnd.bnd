@@ -8,7 +8,8 @@
 	osgi.annotation,\
 	au.org.greekwelfaresa.idempiere.test.junit5,\
 	au.org.greekwelfaresa.idempiere.test.common,\
-	org.idempiere.webservices
+	org.idempiere.webservices,\
+	au.org.greekwelfaresa.idempiere.test.assertj
 
 Export-Package: au.org.greekwelfaresa.idempiere.test.assertj,au.org.greekwelfaresa.idempiere.test.assertj.*
 

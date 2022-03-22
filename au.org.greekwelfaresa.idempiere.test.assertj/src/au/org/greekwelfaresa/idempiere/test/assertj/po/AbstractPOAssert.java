@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Properties;
 
 import org.compiere.model.PO;
 
@@ -20,8 +21,12 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		return "PO:\n  <" + getPODescription() + '>';
 	}
 	
+	static String getPODescription(PO po) {
+		return po.getClass().getName().startsWith("X_") ? "[" + po.get_TableName() + ":" + po.get_ID() + "]" : po.toString();
+	}
+	
 	protected String getPODescription() {
-		return "[" + actual.get_TableName() + ":" + actual.get_ID() + "]";
+		return getPODescription(actual);
 	}
 	
 	public SELF hasColumnCount(int expected) {
@@ -37,7 +42,6 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		
 		Object actualColumn = actual.get_Value(columnName);
-		System.err.println("actual: " + actual + ", actualColumn: " + actualColumn + ", expected: " + expected);
 		if (!Objects.equals(expected, actualColumn)) {
 			failWithActualExpectedAndMessage(actualColumn, expected, "\nExpecting PO:\n  <%s>\ncolumn <%s>\nto have value\n <%s>\nbut it was\n <%s>", getPODescription(), columnName, expected, actualColumn);
 		}
@@ -68,6 +72,22 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		if (actualID != expected) {
 			failWithActualExpectedAndMessage(actualID, expected, "\nExpecting PO:\n  <%s>\nto have org ID:\n <%s>\nbut it was:\n <%s>", getPODescription(), expected, actualID);
 		} 
+		return myself;
+	}
+
+	public SELF hasSameContextAs(PO other) {
+		Properties actualCtx = actual.getCtx();
+		if (actualCtx != other.getCtx()) {
+			failWithActualExpectedAndMessage(actualCtx, other.getCtx(), "\nExpecting PO:\n  <%s>\nto have same context as\n <%s>\nbut it did not", getPODescription(), getPODescription(other));
+		}
+		return myself;
+	}
+
+	public SELF hasTrxName(String expected) {
+		String actualTrx = actual.get_TrxName();
+		if (!Objects.equals(expected, actualTrx)) {
+			failWithActualExpectedAndMessage(actualTrx, expected, "\nExpecting PO:\n  <%s>\nto have trx\n <%s>\nbut it was\n <%s>", getPODescription(), expected, actualTrx);
+		}
 		return myself;
 	}
 	

@@ -107,46 +107,6 @@ public abstract class AbstractAD_UserDef_TabAssert<SELF extends AbstractAD_UserD
 		return myself;
 	}
 
-	public SELF isReadOnly()
-	{
-		isNotNull();
-		if (!actual.isReadOnly()) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto be ReadOnly\nbut it was not",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF isNotReadOnly()
-	{
-		isNotNull();
-		if (actual.isReadOnly()) {
-			failWithMessage("\nExpecting PO: \n  <%s>\n to not be ReadOnly\nbut it was",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF isSingleRow()
-	{
-		isNotNull();
-		if (!actual.isSingleRow()) {
-			failWithMessage("\nExpecting PO:\n  <%s>\nto be SingleRow\nbut it was not",
-				getPODescription());
-		}
-		return myself;
-	}
-
-	public SELF isNotSingleRow()
-	{
-		isNotNull();
-		if (actual.isSingleRow()) {
-			failWithMessage("\nExpecting PO: \n  <%s>\n to not be SingleRow\nbut it was",
-				getPODescription());
-		}
-		return myself;
-	}
-
 	public SELF hasName(String expected)
 	{
 		isNotNull();

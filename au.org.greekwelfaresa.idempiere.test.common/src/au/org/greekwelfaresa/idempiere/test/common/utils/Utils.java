@@ -249,16 +249,25 @@ public class Utils {
 		return new Timestamp(trunc * 1000);
 	}
 
-	// The db backend does not preserve milliseconds. For exact comparisons,
-	// therefore,
-	// we need to truncate our timestamps to whole seconds.
-	public static Timestamp today() {
+	public static Timestamp datePart(Date date) {
+		return datePart(date.getTime());
+	}
+	
+	// Some db backend fields do not preserve the time part. For exact comparisons,
+	// therefore, we need to truncate our timestamps to whole days.
+	public static Timestamp datePart(long milliseconds) {
 		Calendar c = Calendar.getInstance();
-		c.setTimeInMillis(System.currentTimeMillis());
+		c.setTimeInMillis(milliseconds);
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 		return new Timestamp(c.getTimeInMillis());
+	}
+	// The db backend does not preserve milliseconds. For exact comparisons,
+	// therefore,
+	// we need to truncate our timestamps to whole seconds.
+	public static Timestamp today() {
+		return datePart(System.currentTimeMillis());
 	}
 }

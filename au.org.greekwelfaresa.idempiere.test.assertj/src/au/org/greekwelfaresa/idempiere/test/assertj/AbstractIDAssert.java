@@ -5,6 +5,7 @@ import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.parseDateT
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -41,6 +42,8 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 				millis = ((Date) expected).getTime();
 			} else if (expected instanceof Number) {
 				millis = ((Number) expected).longValue();
+			} else if (expected instanceof Calendar) {
+				millis = ((Calendar) expected).getTimeInMillis();
 			} else {
 				throw new IllegalArgumentException("expected was of an unsupported type: " + expected.getClass() + ", " + expected);
 			}
@@ -84,7 +87,7 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 				failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s: <%s>\nbut it was null",
 						getDescription(), fieldName, expectedField);
 			}
-		} else if (actualField.compareTo(expectedField) != 0) {
+		} else if (expectedField == null || actualField.compareTo(expectedField) != 0) {
 			failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s: <%s>\nbut it was: <%s>",
 				getDescription(), fieldName, expectedField, actualField);
 		}

@@ -42,6 +42,11 @@ import org.compiere.Adempiere;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MActivity;
 import org.compiere.model.MAttachment;
+import org.compiere.model.MAttribute;
+import org.compiere.model.MAttributeInstance;
+import org.compiere.model.MAttributeSet;
+import org.compiere.model.MAttributeSetInstance;
+import org.compiere.model.MAttributeUse;
 import org.compiere.model.MBPBankAccount;
 import org.compiere.model.MBPartner;
 import org.compiere.model.MBPartnerLocation;
@@ -177,6 +182,8 @@ public class IDempiereEnv implements AutoCloseable {
 	private MPriceList m_priceListSO = null;
 	private MPriceList m_priceListPO = null;
 	private MProduct m_product = null;
+	private MAttributeSet m_attributeSet = null;
+	private MAttributeSetInstance m_attributeSetInstance = null;
 	private BigDecimal m_limitPriceSO = null;
 	private BigDecimal m_stdPriceSO = null;
 	private BigDecimal m_listPriceSO = null;
@@ -750,6 +757,22 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public void setProduct(MProduct m_product) {
 		this.m_product = m_product;
+	}
+
+	public MAttributeSet getAttributeSet() {
+		return m_attributeSet == null ? (mParentEnv == null ? null : mParentEnv.getAttributeSet()) : m_attributeSet;
+	}
+
+	public void setAttributeSet(MAttributeSet m_attributeSet) {
+		this.m_attributeSet = m_attributeSet;
+	}
+
+	public MAttributeSetInstance getAttributeSetInstance() {
+		return m_attributeSetInstance == null ? (mParentEnv == null ? null : mParentEnv.getAttributeSetInstance()) : m_attributeSetInstance;
+	}
+
+	public void setAttributeSetInstance(MAttributeSetInstance m_attributeSetInstance) {
+		this.m_attributeSetInstance = m_attributeSetInstance;
 	}
 
 	public String getPaymentRule() {
@@ -1436,16 +1459,31 @@ public class IDempiereEnv implements AutoCloseable {
 		// return null;
 	} // create BP
 
+	static class TestPriceList extends MPriceList {
+
+		public TestPriceList(Properties ctx, int M_PriceList_ID, String trxName) {
+			super(ctx, M_PriceList_ID, trxName);
+		}
+
+		@Override
+		public void set_TrxName(String trxName) {
+			System.err.println("Changing transaction!!!: " + trxName);
+			super.set_TrxName(trxName);
+		}
+		
+	}
+	
 	public MPriceList createPriceListSO() {
 		if (getPriceListSO() == null) {
-			MPriceList spl = new MPriceList(getCtx(), 0, null);
-			spl.setName("SO_During: " + getStepName() + getRandom());
+//			MPriceList spl = new MPriceList(getCtx(), 0, null);
+			MPriceList spl = new TestPriceList(getCtx(), 0, null);
+			spl.setName("SO_During: " + getPriceListName());
 			spl.setDescription(getStepMsgLong());
 			spl.setAD_Org_ID(0);
 			spl.setIsSOPriceList(true);
 			spl.setC_Currency_ID(getCurrency().get_ID());
 			spl.saveEx();
-			spl.saveEx(get_TrxName());
+			//spl.saveEx(get_TrxName());
 			setPriceListSO(spl);
 			// Ensure that we clean up afterwards.
 			registerPO(spl);
@@ -1454,16 +1492,23 @@ public class IDempiereEnv implements AutoCloseable {
 		return null;
 	}
 
+	String getPriceListName() {
+		final String suffix = getStepName() + getRandom();
+		return suffix.substring("PO_During: ".length());
+		
+	}
+	
 	public MPriceList createPriceListPO() {
 		if (getPriceListPO() == null) {
-			MPriceList ppl = new MPriceList(getCtx(), 0, null);
-			ppl.setName("PO_During: " + getStepName() + getRandom());
+//			MPriceList ppl = new MPriceList(getCtx(), 0, null);
+			TestPriceList ppl = new TestPriceList(getCtx(), 0, null);
+			ppl.setName("PO_During: " + getPriceListName());
 			ppl.setDescription(getStepMsgLong());
 			ppl.setAD_Org_ID(0);
 			ppl.setIsSOPriceList(false);
 			ppl.setC_Currency_ID(getCurrency().get_ID());
 			ppl.saveEx();
-			ppl.saveEx(get_TrxName());
+			//ppl.saveEx(get_TrxName());
 			setPriceListPO(ppl);
 			registerPO(ppl);
 			return ppl;
@@ -1497,12 +1542,87 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		acct.setAccountNo(createAccountNo());
 		acct.saveEx();
-		acct.saveEx(get_TrxName());
+//		acct.saveEx(get_TrxName());
 		registerPO(acct);
 		setBPBankAcct(acct);
 		return acct;
 	}
 
+	public MAttributeSet createAttributeSet() {
+		MAttributeSet as = createPO(MAttributeSet.class, null);
+		as.saveEx();
+//		registerPO(as);
+		setAttributeSet(as);
+		return as;
+	}
+
+	public MAttributeSetInstance createAttributeSetInstance() {
+		MAttributeSetInstance asi = createPO(MAttributeSetInstance.class, null);
+		asi.setM_AttributeSet_ID(getAttributeSet().get_ID());
+		asi.saveEx();
+//		registerPO(as);
+		setAttributeSetInstance(asi);
+		return asi;
+	}
+
+	public MAttribute addAttributeToSet(String attribute, boolean instance) {
+		MAttribute a = createPO(MAttribute.class, null);
+		a.setName(attribute);
+		a.setIsInstanceAttribute(instance);
+		a.saveEx();
+//			registerPO(a);
+		MAttributeUse au = createPO(MAttributeUse.class, null);
+		au.setM_Attribute_ID(a.get_ID());
+		MAttributeSet as = getAttributeSet();
+		if (as == null) {
+			as = createAttributeSet();
+		}
+		au.setM_AttributeSet_ID(as.get_ID());
+		au.saveEx();
+//			registerPO(au);
+		return a;
+	}
+	
+	public MAttributeInstance addAttributeToASI(String attribute, String value) {
+		MAttributeInstance a = createPO(MAttributeInstance.class, null);
+
+		MAttributeSetInstance asi = getAttributeSetInstance();
+		if (asi == null) {
+			asi = createAttributeSetInstance();
+		}
+		MAttributeSet as = asi.getMAttributeSet();
+		
+		MAttribute[] nonInstanceAttributes = as.getMAttributes(false);
+		MAttribute selected = null;
+		
+		for (MAttribute attr : nonInstanceAttributes) {
+			System.err.println("Checking non-instance attribute " + attr);
+			if (attr.getName().equals(attribute)) {
+				selected = attr;
+				break;
+			}
+		}
+		if (selected == null) {
+			for (MAttribute attr : as.getMAttributes(true)) {
+				System.err.println("Checking instance attribute " + attr);
+				if (attr.getName().equals(attribute)) {
+					selected = attr;
+					break;
+				}
+			}
+		}
+		
+		if (selected == null) {
+			throw new IllegalStateException("Attribute Set " + as + " does not have attribute " + attribute);
+		}
+		a.setM_AttributeSetInstance_ID(asi.get_ID());
+		a.setM_Attribute_ID(selected.get_ID());
+		a.setValue(value);
+		a.saveEx();
+		registerPO(a);
+		return a;
+	}
+	
 	// create product second
 	public MProduct createProduct() {
 		// perform further validation if needed based on business logic
@@ -1519,6 +1639,9 @@ public class IDempiereEnv implements AutoCloseable {
 		product.setC_TaxCategory_ID(getDefaultMTaxCategoryID());
 		product.setProductType(X_M_Product.PRODUCTTYPE_Item);
 		product.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
+		if (getAttributeSet() != null) {
+			product.setM_AttributeSet_ID(getAttributeSet().get_ID());
+		}
 		product.saveEx();
 		registerPO(product);
 		setProduct(product);
@@ -1530,6 +1653,10 @@ public class IDempiereEnv implements AutoCloseable {
 	} // create product
 
 	public void addProductToPriceLists(MProduct product) {
+		addProductToPriceLists(product, null);
+	}
+	
+	public void addProductToPriceLists(MProduct product, String trxName) {
 		if (getBP() != null) {
 			// create PO and SO price list entries
 			MPriceList spl = getPriceListSO();
@@ -1582,14 +1709,14 @@ public class IDempiereEnv implements AutoCloseable {
 				registerPO(splv);
 			}
 
-			MProductPrice pprice = new MProductPrice(getCtx(), pplv.get_ID(), product.get_ID(), null);
+			MProductPrice pprice = new MProductPrice(getCtx(), pplv.get_ID(), product.get_ID(), trxName);
 			pprice.setPriceLimit(getLimitPricePO());
 			pprice.setPriceStd(getStdPricePO());
 			pprice.setPriceList(getListPricePO());
 			pprice.saveEx();
 			registerPO(pprice);
 
-			MProductPrice sprice = new MProductPrice(getCtx(), splv.get_ID(), product.get_ID(), null);
+			MProductPrice sprice = new MProductPrice(getCtx(), splv.get_ID(), product.get_ID(), trxName);
 			sprice.setPriceLimit(getLimitPriceSO());
 			sprice.setPriceStd(getStdPriceSO());
 			sprice.setPriceList(getListPriceSO());

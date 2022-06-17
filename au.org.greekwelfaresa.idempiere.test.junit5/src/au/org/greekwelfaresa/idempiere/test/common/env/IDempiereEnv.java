@@ -39,6 +39,7 @@ import org.adempiere.base.Core;
 import org.adempiere.base.event.IEventTopics;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.Adempiere;
+import org.compiere.acct.Fact;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MActivity;
 import org.compiere.model.MAttachment;
@@ -64,6 +65,9 @@ import org.compiere.model.MDepositBatch;
 import org.compiere.model.MDepositBatchLine;
 import org.compiere.model.MDiscountSchema;
 import org.compiere.model.MDocType;
+import org.compiere.model.MElement;
+import org.compiere.model.MElementValue;
+import org.compiere.model.MFactAcct;
 import org.compiere.model.MInOut;
 import org.compiere.model.MInOutLine;
 import org.compiere.model.MInvoice;
@@ -114,6 +118,7 @@ import org.compiere.model.X_M_DiscountSchema;
 import org.compiere.model.X_M_InOut;
 import org.compiere.model.X_M_Product;
 import org.compiere.model.X_M_Warehouse;
+import org.compiere.process.DocumentEngine;
 import org.compiere.process.ProcessCall;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoParameter;
@@ -225,7 +230,7 @@ public class IDempiereEnv implements AutoCloseable {
 	private Random m_rand = null;
 	private int m_ue1 = 0;
 	private int m_ue2 = 0;
-	
+
 	private String m_process_UU = null;
 	private List<ProcessInfoParameter> m_processInfoParams = new ArrayList<ProcessInfoParameter>();
 	private int m_processTable_ID = 0;
@@ -399,6 +404,10 @@ public class IDempiereEnv implements AutoCloseable {
 
 	private List<WeakReference<AutoCloseable>> toBeClosed = new ArrayList<>();
 
+	public <T extends PO> Query query(Class<T> clazz) {
+		return query(clazz, "1=1");
+	}
+
 	public <T extends PO> Query query(Class<T> clazz, String where, Object... parameters) {
 		try {
 			String tableName = (String) clazz.getField("Table_Name").get(null);
@@ -495,7 +504,7 @@ public class IDempiereEnv implements AutoCloseable {
 
 		MYear year = new Query(getCtx(), MYear.Table_Name,
 				MYear.COLUMNNAME_FiscalYear + "=? AND " + MYear.COLUMNNAME_C_Calendar_ID + "=?", mTrxName)
-						.setClient_ID().setParameters(thisYear, getC_Calendar_ID()).first();
+				.setClient_ID().setParameters(thisYear, getC_Calendar_ID()).first();
 
 		if (year == null) {
 			year = new MYear(getCalendar());
@@ -575,8 +584,8 @@ public class IDempiereEnv implements AutoCloseable {
 
 	ServiceRegistration<EventHandler> reg;
 
-	List<PORecorder> recorders = new ArrayList<>(); 
-	
+	List<PORecorder> recorders = new ArrayList<>();
+
 	public PORecorder startRecorder() {
 		PORecorder recorder = new PORecorder(mTrxName);
 		recorders.add(recorder);
@@ -768,7 +777,8 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MAttributeSetInstance getAttributeSetInstance() {
-		return m_attributeSetInstance == null ? (mParentEnv == null ? null : mParentEnv.getAttributeSetInstance()) : m_attributeSetInstance;
+		return m_attributeSetInstance == null ? (mParentEnv == null ? null : mParentEnv.getAttributeSetInstance())
+				: m_attributeSetInstance;
 	}
 
 	public void setAttributeSetInstance(MAttributeSetInstance m_attributeSetInstance) {
@@ -1375,11 +1385,11 @@ public class IDempiereEnv implements AutoCloseable {
 	public String getStepMsgName() {
 		return getStepMsgName("");
 	}
-	
+
 	public String getStepMsgNameWithHash() {
 		return getStepMsgName(String.valueOf(getRandom()));
 	}
-	
+
 	public String getStepMsgName(String hash) {
 		final String stepMsg = getStepMsg() + (hash == null || hash.equals("") ? "" : "_" + hash);
 		final int length = stepMsg.length();
@@ -1470,9 +1480,9 @@ public class IDempiereEnv implements AutoCloseable {
 			System.err.println("Changing transaction!!!: " + trxName);
 			super.set_TrxName(trxName);
 		}
-		
+
 	}
-	
+
 	public MPriceList createPriceListSO() {
 		if (getPriceListSO() == null) {
 //			MPriceList spl = new MPriceList(getCtx(), 0, null);
@@ -1483,7 +1493,7 @@ public class IDempiereEnv implements AutoCloseable {
 			spl.setIsSOPriceList(true);
 			spl.setC_Currency_ID(getCurrency().get_ID());
 			spl.saveEx();
-			//spl.saveEx(get_TrxName());
+			// spl.saveEx(get_TrxName());
 			setPriceListSO(spl);
 			// Ensure that we clean up afterwards.
 			registerPO(spl);
@@ -1495,9 +1505,9 @@ public class IDempiereEnv implements AutoCloseable {
 	String getPriceListName() {
 		final String suffix = getStepName() + getRandom();
 		return suffix.substring("PO_During: ".length());
-		
+
 	}
-	
+
 	public MPriceList createPriceListPO() {
 		if (getPriceListPO() == null) {
 //			MPriceList ppl = new MPriceList(getCtx(), 0, null);
@@ -1508,7 +1518,7 @@ public class IDempiereEnv implements AutoCloseable {
 			ppl.setIsSOPriceList(false);
 			ppl.setC_Currency_ID(getCurrency().get_ID());
 			ppl.saveEx();
-			//ppl.saveEx(get_TrxName());
+			// ppl.saveEx(get_TrxName());
 			setPriceListPO(ppl);
 			registerPO(ppl);
 			return ppl;
@@ -1582,7 +1592,7 @@ public class IDempiereEnv implements AutoCloseable {
 //			registerPO(au);
 		return a;
 	}
-	
+
 	public MAttributeInstance addAttributeToASI(String attribute, String value) {
 		MAttributeInstance a = createPO(MAttributeInstance.class, null);
 
@@ -1591,10 +1601,10 @@ public class IDempiereEnv implements AutoCloseable {
 			asi = createAttributeSetInstance();
 		}
 		MAttributeSet as = asi.getMAttributeSet();
-		
+
 		MAttribute[] nonInstanceAttributes = as.getMAttributes(false);
 		MAttribute selected = null;
-		
+
 		for (MAttribute attr : nonInstanceAttributes) {
 			System.err.println("Checking non-instance attribute " + attr);
 			if (attr.getName().equals(attribute)) {
@@ -1611,7 +1621,7 @@ public class IDempiereEnv implements AutoCloseable {
 				}
 			}
 		}
-		
+
 		if (selected == null) {
 			throw new IllegalStateException("Attribute Set " + as + " does not have attribute " + attribute);
 		}
@@ -1622,7 +1632,7 @@ public class IDempiereEnv implements AutoCloseable {
 		registerPO(a);
 		return a;
 	}
-	
+
 	// create product second
 	public MProduct createProduct() {
 		// perform further validation if needed based on business logic
@@ -1655,7 +1665,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public void addProductToPriceLists(MProduct product) {
 		addProductToPriceLists(product, null);
 	}
-	
+
 	public void addProductToPriceLists(MProduct product, String trxName) {
 		if (getBP() != null) {
 			// create PO and SO price list entries
@@ -1679,7 +1689,7 @@ public class IDempiereEnv implements AutoCloseable {
 				// get bogus price list schema - required field
 				MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
 						"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
-								.setClient_ID().first();
+						.setClient_ID().first();
 
 				pplv = new MPriceListVersion(getCtx(), 0, null);
 				pplv.setAD_Org_ID(0);
@@ -1696,7 +1706,7 @@ public class IDempiereEnv implements AutoCloseable {
 				// get bogus price list schema - required field
 				MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
 						"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
-								.setClient_ID().first();
+						.setClient_ID().first();
 
 				splv = new MPriceListVersion(getCtx(), 0, null);
 				splv.setAD_Org_ID(0);
@@ -1824,7 +1834,7 @@ public class IDempiereEnv implements AutoCloseable {
 			line.setS_ResourceAssignment_ID(ra.get_ID());
 			setQty(ra.getQty());
 		}
-		
+
 		if (getQty() == null || getQty().compareTo(Env.ZERO) == 0)
 			line.setQty(Env.ONE);
 		else
@@ -2462,7 +2472,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public MWarehouse createWarehouse() {
 		return createWarehouse(get_TrxName());
 	}
-	
+
 	public MWarehouse createWarehouse(String trxName) {
 		// do not validate this method. It is used to update the VO so that it can pass
 		// validation
@@ -2700,5 +2710,40 @@ public class IDempiereEnv implements AutoCloseable {
 		setProcessInfoParams(new ArrayList<ProcessInfoParameter>());
 		setProcessRecord_ID(0);
 		setProcessTable_ID(0);
+	}
+
+	public List<MFactAcct> getFacts(PO entity) {
+		return query(MFactAcct.class, "AD_Table_ID=? AND Record_ID=? AND C_AcctSchema_ID=?")
+				.setParameters(entity.get_Table_ID(), entity.get_ID(), getClient().getAcctSchema().get_ID()).list();
+	}
+
+	public String post(PO entity) {
+		String retval = DocumentEngine.postImmediate(entity.getCtx(), entity.getAD_Client_ID(), entity.get_Table_ID(),
+				entity.get_ID(), true, entity.get_TrxName());
+		entity.load(get_TrxName());
+		return retval;
+	}
+
+	public MElementValue getAccount(String name) {
+		return new Query(getCtx(), MElementValue.Table_Name, "Name=?", get_TrxName()).setParameters(name)
+				.setApplyAccessFilter(true).firstOnly();
+	}
+
+	public MElement getCOA() {
+		return query(MElement.class).setApplyAccessFilter(true).first();
+	}
+
+	public MElementValue createAccount(String name) {
+		return createAccount(name, MElementValue.ACCOUNTTYPE_Expense);
+	}
+
+	public MElementValue createAccount(String name, String accountType) {
+		MElementValue retval = createPO(MElementValue.class);
+		retval.setC_Element_ID(getCOA().get_ID());
+		retval.setName(name);
+		retval.setPostActual(true);
+		retval.setAccountType(accountType);
+		retval.saveEx();
+		return retval;
 	}
 }

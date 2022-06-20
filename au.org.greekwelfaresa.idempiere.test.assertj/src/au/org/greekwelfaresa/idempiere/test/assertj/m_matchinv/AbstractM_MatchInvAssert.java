@@ -20,6 +20,22 @@ public abstract class AbstractM_MatchInvAssert<SELF extends AbstractM_MatchInvAs
       super (actual, selfType);
     }
 
+	public SELF isPosted() {
+		isNotNull();
+		if (!actual.isPosted()) {
+			failWithMessage("\nExpecting PO:\n <%s>\nto be posted\nbut it was not", getPODescription());
+		}
+		return myself;
+	}
+
+	public SELF isNotPosted() {
+		isNotNull();
+		if (actual.isPosted()) {
+			failWithMessage("\nExpecting PO:\n <%s>\nto not be posted\nbut it was", getPODescription());
+		}
+		return myself;
+	}
+
 
 	public SELF hasC_InvoiceLine_ID(int expected)
 	{

@@ -1001,6 +1001,10 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_qty = m_qty;
 	}
 
+	public void setQty(String m_qty) {
+		this.m_qty = new BigDecimal(m_qty);
+	}
+
 	public void setQty(int m_qty) {
 		setQty(new BigDecimal(m_qty));
 	}
@@ -1469,24 +1473,9 @@ public class IDempiereEnv implements AutoCloseable {
 		// return null;
 	} // create BP
 
-	static class TestPriceList extends MPriceList {
-
-		public TestPriceList(Properties ctx, int M_PriceList_ID, String trxName) {
-			super(ctx, M_PriceList_ID, trxName);
-		}
-
-		@Override
-		public void set_TrxName(String trxName) {
-			System.err.println("Changing transaction!!!: " + trxName);
-			super.set_TrxName(trxName);
-		}
-
-	}
-
 	public MPriceList createPriceListSO() {
 		if (getPriceListSO() == null) {
-//			MPriceList spl = new MPriceList(getCtx(), 0, null);
-			MPriceList spl = new TestPriceList(getCtx(), 0, null);
+			MPriceList spl = new MPriceList(getCtx(), 0, null);
 			spl.setName("SO_During: " + getPriceListName());
 			spl.setDescription(getStepMsgLong());
 			spl.setAD_Org_ID(0);
@@ -1503,15 +1492,18 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	String getPriceListName() {
-		final String suffix = getStepName() + getRandom();
-		return suffix.substring("PO_During: ".length());
+		final String suffix = getStepMsgNameWithHash();
+		System.err.println("suffix: " + suffix);
+		if (suffix.length() < 60 - "PO_During: ".length()) {
+			return suffix;
+		}
+		return suffix.substring(suffix.length() - 60 + "PO_During: ".length());
 
 	}
 
 	public MPriceList createPriceListPO() {
 		if (getPriceListPO() == null) {
-//			MPriceList ppl = new MPriceList(getCtx(), 0, null);
-			TestPriceList ppl = new TestPriceList(getCtx(), 0, null);
+			MPriceList ppl = new MPriceList(getCtx(), 0, null);
 			ppl.setName("PO_During: " + getPriceListName());
 			ppl.setDescription(getStepMsgLong());
 			ppl.setAD_Org_ID(0);
@@ -1661,6 +1653,33 @@ public class IDempiereEnv implements AutoCloseable {
 //		}
 //		return null;
 	} // create product
+
+	public MProduct createService() {
+		// perform further validation if needed based on business logic
+
+		validate();
+
+		// use clearProduct() to create new product
+		// if (getProduct() == null) {
+		MProduct product = new MProduct(getCtx(), 0, null);
+		product.setAD_Org_ID(0);
+		product.setDescription(getStepMsgLong());
+		product.setName(getScenarioName());
+		product.setM_Product_Category_ID(getDefaultMProductCategoryID());
+		product.setC_TaxCategory_ID(getDefaultMTaxCategoryID());
+		product.setProductType(X_M_Product.PRODUCTTYPE_Service);
+		product.setIsStocked(false);
+		product.setC_UOM_ID(MUOM.getDefault_UOM_ID(getCtx()));
+		if (getAttributeSet() != null) {
+			product.setM_AttributeSet_ID(getAttributeSet().get_ID());
+		}
+		product.saveEx();
+		registerPO(product);
+		setProduct(product);
+
+		addProductToPriceLists(product);
+		return product;
+	} // create service product
 
 	public void addProductToPriceLists(MProduct product) {
 		addProductToPriceLists(product, null);
@@ -1960,7 +1979,11 @@ public class IDempiereEnv implements AutoCloseable {
 		return io;
 	} // create inout
 
-	public MInvoice createInvoice() {
+	/**
+	 * Creates an invoice with defaults, but no lines.
+	 * @return
+	 */
+	public MInvoice createInvoiceHeader() {
 		// perform further validation if needed based on business logic
 		if (getDocType() == null) {
 			appendErrorMsg("DocType is Null");
@@ -1995,7 +2018,11 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		inv.saveEx();
 		setInvoice(inv);
-
+		return inv;
+	}
+	
+	public MInvoice createInvoice() {
+		MInvoice inv = createInvoiceHeader();
 		// create invoice line
 		MInvoiceLine il = new MInvoiceLine(getCtx(), 0, get_TrxName());
 		il.setC_Invoice_ID(getInvoice().get_ID());
@@ -2181,10 +2208,14 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public <T extends PO> T createPO(Class<T> type, String trxName) {
 		T retval = getPO(0, type, trxName);
-		try {
-			Method method = type.getMethod("setName", String.class);
-			method.invoke(retval, getStepMsgName());
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+		if (retval.columnExists("Name")) {
+			retval.set_ValueOfColumn("Name", getStepMsgName());
+		}
+		if (retval.columnExists("Description")) {
+			retval.set_ValueOfColumn("Description", getStepMsgLong());
+		}
+		if (retval.columnExists("AD_Org_ID")) {
+			retval.set_ValueOfColumn("AD_Org_ID", getOrg().get_ID());
 		}
 		try {
 			Method method = type.getMethod("setDescription", String.class);

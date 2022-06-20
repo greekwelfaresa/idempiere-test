@@ -40,6 +40,8 @@ import org.adempiere.base.event.IEventTopics;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.Adempiere;
 import org.compiere.acct.Fact;
+import org.compiere.model.I_C_InvoiceLine;
+import org.compiere.model.I_M_InOutLine;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MActivity;
 import org.compiere.model.MAttachment;
@@ -74,6 +76,7 @@ import org.compiere.model.MInvoice;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MLocation;
 import org.compiere.model.MLocator;
+import org.compiere.model.MMatchInv;
 import org.compiere.model.MOrder;
 import org.compiere.model.MOrderLine;
 import org.compiere.model.MOrg;
@@ -2776,5 +2779,12 @@ public class IDempiereEnv implements AutoCloseable {
 		retval.setAccountType(accountType);
 		retval.saveEx();
 		return retval;
+	}
+
+	public MMatchInv[] getMatchInv(int inOutLineID, int invoiceLineID) {
+		return MMatchInv.get(getCtx(), inOutLineID, invoiceLineID, get_TrxName());
+	}
+	public MMatchInv[] getMatchInv(I_M_InOutLine iol, I_C_InvoiceLine il) {
+		return getMatchInv(iol.getM_InOutLine_ID(), il.getC_InvoiceLine_ID());
 	}
 }

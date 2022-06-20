@@ -34,4 +34,12 @@ public @interface QuerySource {
 	 * @return The maximum number of query results to return.
 	 */
 	long limit() default Long.MAX_VALUE;
+
+	/**
+	 * Specifies whether or not to apply the access filter when retrieving query results.
+	 * Default is <tt>true</tt> (apply the access filter).
+	 * 
+	 * @return Flag indicating whether to apply the access filter.
+	 */
+	boolean accessFilter() default true;
 }

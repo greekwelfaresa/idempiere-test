@@ -30,7 +30,7 @@ class QueryArgumentsProvider implements ArgumentsProvider, AnnotationConsumer<Qu
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws DBException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		return getIDempiereEnv(context).query(annotation.value(), annotation.where(), (Object[])annotation.params()).list()
+		return getIDempiereEnv(context).query(annotation.value(), annotation.where(), (Object[])annotation.params()).setApplyAccessFilter(annotation.accessFilter()).list()
 				.stream().limit(annotation.limit()).map(Arguments::of);
 	}
 

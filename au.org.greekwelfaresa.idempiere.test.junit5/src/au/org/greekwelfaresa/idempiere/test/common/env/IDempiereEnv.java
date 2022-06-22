@@ -2,13 +2,9 @@ package au.org.greekwelfaresa.idempiere.test.common.env;
 
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ONE;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ZERO;
-import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
-import static org.adempiere.base.event.IEventTopics.PO_AFTER_CHANGE;
-import static org.adempiere.base.event.IEventTopics.PO_AFTER_DELETE;
-import static org.adempiere.base.event.IEventTopics.PO_AFTER_NEW;
-import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.timestamp;
+import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -23,7 +19,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -36,12 +31,11 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.adempiere.base.Core;
-import org.adempiere.base.event.IEventTopics;
 import org.assertj.core.api.SoftAssertionsProvider;
 import org.compiere.Adempiere;
-import org.compiere.acct.Fact;
 import org.compiere.model.I_C_InvoiceLine;
 import org.compiere.model.I_M_InOutLine;
+import org.compiere.model.MAccount;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MActivity;
 import org.compiere.model.MAttachment;
@@ -91,7 +85,6 @@ import org.compiere.model.MPriceList;
 import org.compiere.model.MPriceListVersion;
 import org.compiere.model.MProcess;
 import org.compiere.model.MProduct;
-import org.compiere.model.MProductBOM;
 import org.compiere.model.MProductCategory;
 import org.compiere.model.MProductPrice;
 import org.compiere.model.MProject;
@@ -99,6 +92,7 @@ import org.compiere.model.MRegion;
 import org.compiere.model.MResource;
 import org.compiere.model.MResourceAssignment;
 import org.compiere.model.MResourceType;
+import org.compiere.model.MTax;
 import org.compiere.model.MTaxCategory;
 import org.compiere.model.MUOM;
 import org.compiere.model.MUser;
@@ -116,6 +110,7 @@ import org.compiere.model.X_C_Calendar;
 import org.compiere.model.X_C_DocType;
 import org.compiere.model.X_C_Order;
 import org.compiere.model.X_C_PeriodControl;
+import org.compiere.model.X_C_Tax_Acct;
 import org.compiere.model.X_C_Year;
 import org.compiere.model.X_M_DiscountSchema;
 import org.compiere.model.X_M_InOut;
@@ -132,18 +127,13 @@ import org.compiere.util.Language;
 import org.compiere.util.Msg;
 import org.compiere.util.TimeUtil;
 import org.compiere.util.Trx;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.EventHandler;
-import org.osgi.test.common.dictionary.Dictionaries;
 import org.osgi.test.common.exceptions.Exceptions;
+import org.osgi.test.common.exceptions.RunnableWithException;
 
 import au.org.greekwelfaresa.idempiere.test.common.annotation.InjectIDempiereEnv;
 import au.org.greekwelfaresa.idempiere.test.process.ProcessController;
-
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceRegistration;
 
 public class IDempiereEnv implements AutoCloseable {
 
@@ -165,6 +155,7 @@ public class IDempiereEnv implements AutoCloseable {
 	private int mUserId;
 	private int mRoleId;
 	private int mWarehouseId;
+	private Map<String, RunnableWithException> mPOCleanup = new HashMap<>();
 	private List<PO> mPOs = new ArrayList<>();
 	private IDempiereEnv mParentEnv;
 	private Savepoint mSavePoint;
@@ -205,6 +196,8 @@ public class IDempiereEnv implements AutoCloseable {
 	private String m_paymentRule = null;
 	private MOrder m_order = null;
 	private MOrderLine m_orderLine = null;
+	private MTax m_tax = null;
+	private MTaxCategory m_taxCategory = null;
 	private MProject m_project = null;
 	private MActivity m_activity = null;
 	private MCampaign m_campaign = null;
@@ -397,6 +390,11 @@ public class IDempiereEnv implements AutoCloseable {
 		mPOs.add(po);
 	}
 
+	public void registerPO(PO po, RunnableWithException cleanup) {
+		registerPO(po);
+		mPOCleanup.put(po.get_Table_ID() + ":" + po.get_ID(), cleanup);
+	}
+	
 	public boolean isAutoRollback() {
 		return mAutoRollback;
 	}
@@ -411,13 +409,17 @@ public class IDempiereEnv implements AutoCloseable {
 		return query(clazz, "1=1");
 	}
 
-	public <T extends PO> Query query(Class<T> clazz, String where, Object... parameters) {
+	public <T extends PO> Query query(String trxName, Class<T> clazz, String where, Object... parameters) {
 		try {
 			String tableName = (String) clazz.getField("Table_Name").get(null);
 			return new Query(getCtx(), tableName, where, get_TrxName()).setParameters(parameters);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error running query: " + e.getMessage(), e);
 		}
+	}
+	
+	public <T extends PO> Query query(Class<T> clazz, String where, Object... parameters) {
+		return query(get_TrxName(), clazz, where, parameters);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -507,7 +509,9 @@ public class IDempiereEnv implements AutoCloseable {
 
 		MYear year = new Query(getCtx(), MYear.Table_Name,
 				MYear.COLUMNNAME_FiscalYear + "=? AND " + MYear.COLUMNNAME_C_Calendar_ID + "=?", mTrxName)
-				.setClient_ID().setParameters(thisYear, getC_Calendar_ID()).first();
+						.setClient_ID()
+						.setParameters(thisYear, getC_Calendar_ID())
+						.first();
 
 		if (year == null) {
 			year = new MYear(getCalendar());
@@ -627,15 +631,19 @@ public class IDempiereEnv implements AutoCloseable {
 
 			Collections.reverse(mPOs);
 			for (PO po : mPOs) {
-//				System.err.println("deleting PO: " + po + ", new? " + po.is_new() + ", trx: " + po.get_TrxName() + ", " + mTrx.getTrxName() + ", m: " + mTrxName);
-				if (!po.is_new() && !mTrx.getTrxName().equals(po.get_TrxName())) {
-//					System.err.println("===>actually deleting: " + po + ", " + mTrx.getTrxName());
-					try {
-						po.deleteEx(true);
-					} catch (Exception e) {
-						System.err.println("Error trying to delete: " + po + ", error: " + e);
-						e.printStackTrace();
+				try {
+					String key = po.get_Table_ID() + ":" + po.get_ID();
+					RunnableWithException cleanup = mPOCleanup.remove(key);
+					if (cleanup != null) {
+						try {
+							cleanup.run();
+						} catch (Exception e) {
+							getLog().log(Level.WARNING, "Error trying to run cleanup for : " + po + ", error: " + e, e);
+						}
 					}
+					po.deleteEx(true, null);
+				} catch (Exception e) {
+					getLog().log(Level.WARNING, "Error trying to delete: " + po + ", error: " + e, e);
 				}
 			}
 		} else {
@@ -794,6 +802,22 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public void setPaymentRule(String m_paymentRule) {
 		this.m_paymentRule = m_paymentRule;
+	}
+
+	public MTaxCategory getTaxCategory() {
+		return m_taxCategory == null ? (mParentEnv == null ? null : mParentEnv.getTaxCategory()) : m_taxCategory;
+	}
+
+	public void setTaxCategory(MTaxCategory m_taxCategory) {
+		this.m_taxCategory = m_taxCategory;
+	}
+
+	public MTax getTax() {
+		return m_tax == null ? (mParentEnv == null ? null : mParentEnv.getTax()) : m_tax;
+	}
+
+	public void setTax(MTax m_tax) {
+		this.m_tax = m_tax;
 	}
 
 	public MOrder getOrder() {
@@ -1701,16 +1725,21 @@ public class IDempiereEnv implements AutoCloseable {
 			String sqlWhere = "M_PriceList_ID = ? and ValidFrom = ?";
 
 			MPriceListVersion splv = new Query(getCtx(), MPriceListVersion.Table_Name, sqlWhere, get_TrxName())
-					.setClient_ID().setParameters(spl.get_ID(), datePL).first();
+					.setClient_ID()
+					.setParameters(spl.get_ID(), datePL)
+					.first();
 
 			MPriceListVersion pplv = new Query(getCtx(), MPriceListVersion.Table_Name, sqlWhere, get_TrxName())
-					.setClient_ID().setParameters(ppl.get_ID(), datePL).first();
+					.setClient_ID()
+					.setParameters(ppl.get_ID(), datePL)
+					.first();
 
 			if (pplv == null) {
 				// get bogus price list schema - required field
 				MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
 						"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
-						.setClient_ID().first();
+								.setClient_ID()
+								.first();
 
 				pplv = new MPriceListVersion(getCtx(), 0, null);
 				pplv.setAD_Org_ID(0);
@@ -1727,7 +1756,8 @@ public class IDempiereEnv implements AutoCloseable {
 				// get bogus price list schema - required field
 				MDiscountSchema schema = new Query(getCtx(), X_M_DiscountSchema.Table_Name,
 						"discounttype = '" + X_M_DiscountSchema.DISCOUNTTYPE_Pricelist + "'", get_TrxName())
-						.setClient_ID().first();
+								.setClient_ID()
+								.first();
 
 				splv = new MPriceListVersion(getCtx(), 0, null);
 				splv.setAD_Org_ID(0);
@@ -1756,25 +1786,28 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 	}
 
-	public MProductBOM createProductBOM(BigDecimal qty, MProduct parentProduct) {
+	@SuppressWarnings("deprecation")
+	public org.compiere.model.MProductBOM createProductBOM(BigDecimal qty, MProduct parentProduct) {
 		validate();
 		if (isError())
 			return null;
 
 		// vo, Qty, parentProd
-		MProductBOM bom = new MProductBOM(getCtx(), 0, get_TrxName());
+		org.compiere.model.MProductBOM bom = new org.compiere.model.MProductBOM(getCtx(), 0, get_TrxName());
 		bom.setAD_Org_ID(0);
 		bom.setDescription(getStepMsgLong());
 		bom.setBOMQty(qty);
-		bom.setBOMType(MProductBOM.BOMTYPE_StandardPart);
+		bom.setBOMType(org.compiere.model.MProductBOM.BOMTYPE_StandardPart);
 		bom.setIsActive(true);
 		bom.setM_ProductBOM_ID(getProduct().get_ID());
 		bom.setM_Product_ID(parentProduct.get_ID());
 
 		// find next line number
-		int newLine = new Query(getCtx(), MProductBOM.Table_Name, "M_Product_ID = ?", get_TrxName())
-				.setParameters(parentProduct.get_ID()).setClient_ID().aggregate("Line", Query.AGGREGATE_MAX).intValue()
-				+ 10;
+		int newLine = new Query(getCtx(), org.compiere.model.MProductBOM.Table_Name, "M_Product_ID = ?", get_TrxName())
+				.setParameters(parentProduct.get_ID())
+				.setClient_ID()
+				.aggregate("Line", Query.AGGREGATE_MAX)
+				.intValue() + 10;
 		bom.setLine(newLine);
 
 		bom.saveEx();
@@ -1786,6 +1819,126 @@ public class IDempiereEnv implements AutoCloseable {
 			parentProduct.saveEx();
 		}
 		return bom;
+	}
+
+	public MTaxCategory createTaxCategory() {
+		MTaxCategory cat = createPO(MTaxCategory.class, null);
+		cat.saveEx();
+		setTaxCategory(cat);
+		registerPO(cat);
+		return cat;
+	}
+
+	public MTax createSummaryTax(MTax... children) {
+		if (children == null || children.length == 0) {
+			appendErrorMsg("No child taxes specified");
+		}
+
+		String type = null;
+		Boolean docLevel = null;
+
+		for (int i = 0; i < children.length; i++) {
+			MTax child = children[i];
+			if (child == null) {
+				appendErrorMsg("Child tax " + i + " was null");
+			} else {
+				if (child.getParent_Tax_ID() != 0) {
+					appendErrorMsg("Child tax " + i + " (" + child + ") already belongs to a parent tax");
+				}
+				if (type == null) {
+					type = child.getSOPOType();
+				} else if (!type.equals(child.getSOPOType())) {
+					appendErrorMsg("Child tax " + i + " (" + child + ") has different tax type: " + child.getSOPOType()
+							+ ", first was: " + type);
+				}
+				if (docLevel == null) {
+					docLevel = child.isDocumentLevel();
+				} else if (docLevel != child.isDocumentLevel()) {
+					appendErrorMsg("Child tax " + i + " (" + child + ") has document level: " + child.isDocumentLevel()
+							+ ", first was: " + docLevel);
+				}
+			}
+		}
+		validate();
+
+		MTax summary = createPO(MTax.class, null);
+		summary.setSOPOType(type);
+		summary.setIsSummary(true);
+		summary.setIsDocumentLevel(docLevel);
+		if (getTaxCategory() == null) {
+			createTaxCategory();
+		}
+		summary.setC_TaxCategory_ID(getTaxCategory().get_ID());
+		summary.saveEx();
+		for (MTax child : children) {
+			child.setParent_Tax_ID(summary.get_ID());
+			child.saveEx();
+		}
+		registerPO(summary, () -> {
+			for (MTax child : children) {
+				child.setParent_Tax_ID(0);
+				child.saveEx(null);
+			}
+		});
+		setTax(summary);
+		return summary;
+	}
+
+	public MTax createTax(String rate, MElementValue expense, MElementValue due, MElementValue credit) {
+		MTax retval = createTax(rate);
+		List<X_C_Tax_Acct> acct = query(null, X_C_Tax_Acct.class, "C_Tax_ID=?", retval.get_ID()).list();
+		for (X_C_Tax_Acct taxAcct : acct) {
+			if (expense != null) {
+				MAccount vc = (MAccount) taxAcct.getT_Expense_A();
+				MAccount newVC = remap(vc, expense.get_ID());
+				taxAcct.setT_Expense_Acct(newVC.get_ID());
+			}
+			
+			if (due != null) {
+				MAccount vc = (MAccount) taxAcct.getT_Due_A();
+				MAccount newVC = remap(vc, due.get_ID());
+				taxAcct.setT_Due_Acct(newVC.get_ID());
+			}
+
+			if (credit != null) {
+				MAccount vc = (MAccount) taxAcct.getT_Due_A();
+				MAccount newVC = remap(vc, due.get_ID());
+				taxAcct.setT_Credit_Acct(newVC.get_ID());
+			}
+			taxAcct.saveEx();
+			System.err.println("Created tax accounting: " + taxAcct);
+			System.err.println("tax accrual: " + taxAcct.getT_Due_A() + " schema: " + taxAcct.getC_AcctSchema_ID());
+			System.err.println("tax expense: " + taxAcct.getT_Expense_A());
+		}
+		return retval;
+	}
+	
+	public MTax createTax(String rate) {
+		return createTax(new BigDecimal(rate));
+	}
+
+	public MTax createTax(BigDecimal rate) {
+		// perform further validation if needed based on business logic
+		if (getDocType() == null) {
+			appendErrorMsg("DocType is Null");
+		}
+		if (rate == null) {
+			appendErrorMsg("Rate is null");
+		}
+		validate();
+
+		MTax tax = createPO(MTax.class, null);
+		tax.setSOPOType(MTax.SOPOTYPE_Both);
+		tax.setRate(rate);
+		tax.setIsDocumentLevel(false);
+		if (getTaxCategory() == null) {
+			createTaxCategory();
+		}
+		tax.setC_TaxCategory_ID(getTaxCategory().get_ID());
+		tax.saveEx();
+		registerPO(tax);
+		setTax(tax);
+		return tax;
 	}
 
 	public MOrder createOrder() {
@@ -1868,6 +2021,10 @@ public class IDempiereEnv implements AutoCloseable {
 			line.setQty(getQty());
 		line.setHeaderInfo(order);
 		line.setPrice();
+
+		if (getTax() != null && !getTax().isDocumentLevel()) {
+			line.setC_Tax_ID(getTax().get_ID());
+		}
 
 		line.saveEx();
 		setOrderLine(line);
@@ -1983,6 +2140,7 @@ public class IDempiereEnv implements AutoCloseable {
 
 	/**
 	 * Creates an invoice with defaults, but no lines.
+	 * 
 	 * @return
 	 */
 	public MInvoice createInvoiceHeader() {
@@ -2022,7 +2180,7 @@ public class IDempiereEnv implements AutoCloseable {
 		setInvoice(inv);
 		return inv;
 	}
-	
+
 	public MInvoice createInvoice() {
 		MInvoice inv = createInvoiceHeader();
 		// create invoice line
@@ -2211,7 +2369,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public <T extends PO> T createPO(Class<T> type, String trxName) {
 		T retval = getPO(0, type, trxName);
 		if (retval.columnExists("Name")) {
-			retval.set_ValueOfColumn("Name", getStepMsgName());
+			retval.set_ValueOfColumn("Name", getStepMsgNameWithHash());
 		}
 		if (retval.columnExists("Description")) {
 			retval.set_ValueOfColumn("Description", getStepMsgLong());
@@ -2381,7 +2539,8 @@ public class IDempiereEnv implements AutoCloseable {
 		validate();
 
 		MProductCategory prodCat = new Query(getCtx(), MProductCategory.Table_Name, "isDefault = 'Y' ", get_TrxName())
-				.setClient_ID().first();
+				.setClient_ID()
+				.first();
 		if (prodCat != null)
 			return prodCat.get_ID();
 		else
@@ -2392,7 +2551,8 @@ public class IDempiereEnv implements AutoCloseable {
 		validate();
 
 		MTaxCategory taxCat = new Query(getCtx(), MTaxCategory.Table_Name, "isDefault = 'Y'", get_TrxName())
-				.setClient_ID().first();
+				.setClient_ID()
+				.first();
 		return taxCat;
 	}
 
@@ -2419,7 +2579,9 @@ public class IDempiereEnv implements AutoCloseable {
 
 		String where = "ad_org_id = " + getOrg().get_ID();
 		return new Query(getCtx(), X_C_BankAccount.Table_Name, where, get_TrxName()).setOnlyActiveRecords(true)
-				.setOrderBy("name").setClient_ID().first();
+				.setOrderBy("name")
+				.setClient_ID()
+				.first();
 	}
 
 	public MLocation createLocation() {
@@ -2445,7 +2607,9 @@ public class IDempiereEnv implements AutoCloseable {
 
 		String where = "ad_org_id <> " + getOrg().get_ID() + " and issummary = 'N'";
 		MOrg org = new Query(getCtx(), X_AD_Org.Table_Name, where, get_TrxName()).setOnlyActiveRecords(true)
-				.setOrderBy("AD_Org_ID").setClient_ID().first();
+				.setOrderBy("AD_Org_ID")
+				.setClient_ID()
+				.first();
 
 		if (org == null) {
 			return createOrg();
@@ -2492,7 +2656,9 @@ public class IDempiereEnv implements AutoCloseable {
 		String where = (getWarehouse() == null ? "" : " m_warehouse_id <> " + getWarehouse().get_ID() + " and ")
 				+ " ad_org_id = " + getOrg().get_ID() + " and IsInTransit = 'N' ";
 		MWarehouse wh = new Query(getCtx(), X_M_Warehouse.Table_Name, where, get_TrxName()).setOnlyActiveRecords(true)
-				.setOrderBy("M_Warehouse_ID").setClient_ID().first();
+				.setOrderBy("M_Warehouse_ID")
+				.setClient_ID()
+				.first();
 
 		if (wh == null) {
 			return createWarehouse();
@@ -2567,7 +2733,6 @@ public class IDempiereEnv implements AutoCloseable {
 		if (rt == null) {
 			rt = createResourceType();
 		}
-		r.setS_ResourceType_ID(rt.get_ID());
 		r.setM_Warehouse_ID(getWarehouse().get_ID());
 		r.saveEx();
 		MProduct product = r.getProduct();
@@ -2621,12 +2786,16 @@ public class IDempiereEnv implements AutoCloseable {
 		cal.setTime(getDate());
 		int currentYear = cal.get(Calendar.YEAR);
 		List<MCalendar> mcals = new Query(getCtx(), X_C_Calendar.Table_Name, null, get_TrxName())
-				.setOnlyActiveRecords(true).setClient_ID().list();
+				.setOnlyActiveRecords(true)
+				.setClient_ID()
+				.list();
 		for (MCalendar mcal : mcals) {
 			String where = " fiscalyear::int in (" + currentYear + "," + (currentYear - 1) + ", " + (currentYear + 1)
 					+ ") and C_Calendar_ID = " + mcal.get_ID();
 			List<MYear> myears = new Query(getCtx(), X_C_Year.Table_Name, where, get_TrxName())
-					.setOnlyActiveRecords(true).setClient_ID().list();
+					.setOnlyActiveRecords(true)
+					.setClient_ID()
+					.list();
 
 			// create a set of all three years
 			List<String> neededYears = new ArrayList<String>();
@@ -2667,7 +2836,9 @@ public class IDempiereEnv implements AutoCloseable {
 
 		String where = " PeriodStatus <> '" + newStatus + "'";
 		List<MPeriodControl> pcs = new Query(getCtx(), X_C_PeriodControl.Table_Name, where, get_TrxName())
-				.setOnlyActiveRecords(true).setClient_ID().list();
+				.setOnlyActiveRecords(true)
+				.setClient_ID()
+				.list();
 		for (MPeriodControl pc : pcs) {
 			pc.setPeriodStatus(newStatus);
 			pc.saveEx();
@@ -2699,7 +2870,8 @@ public class IDempiereEnv implements AutoCloseable {
 			return;
 
 		MProcess pr = new Query(Env.getCtx(), X_AD_Process.Table_Name, "AD_Process_UU=?", get_TrxName())
-				.setParameters(getProcess_UU()).first();
+				.setParameters(getProcess_UU())
+				.first();
 
 		// Create an instance of the process I want to run
 		ProcessCall processCall = null;
@@ -2747,7 +2919,8 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public List<MFactAcct> getFacts(PO entity) {
 		return query(MFactAcct.class, "AD_Table_ID=? AND Record_ID=? AND C_AcctSchema_ID=?")
-				.setParameters(entity.get_Table_ID(), entity.get_ID(), getClient().getAcctSchema().get_ID()).list();
+				.setParameters(entity.get_Table_ID(), entity.get_ID(), getClient().getAcctSchema().get_ID())
+				.list();
 	}
 
 	public String post(PO entity) {
@@ -2759,7 +2932,8 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public MElementValue getAccount(String name) {
 		return new Query(getCtx(), MElementValue.Table_Name, "Name=?", get_TrxName()).setParameters(name)
-				.setApplyAccessFilter(true).firstOnly();
+				.setApplyAccessFilter(true)
+				.firstOnly();
 	}
 
 	public MElement getCOA() {
@@ -2783,7 +2957,16 @@ public class IDempiereEnv implements AutoCloseable {
 	public MMatchInv[] getMatchInv(int inOutLineID, int invoiceLineID) {
 		return MMatchInv.get(getCtx(), inOutLineID, invoiceLineID, get_TrxName());
 	}
+
 	public MMatchInv[] getMatchInv(I_M_InOutLine iol, I_C_InvoiceLine il) {
 		return getMatchInv(iol.getM_InOutLine_ID(), il.getC_InvoiceLine_ID());
+	}
+	
+	public MAccount remap(MAccount orig, int accountID) {
+		return MAccount.get(getCtx(), orig.getAD_Client_ID(), orig.getAD_Org_ID(), orig.getC_AcctSchema_ID(), accountID,
+				orig.getC_SubAcct_ID(), orig.getM_Product_ID(), orig.getC_BPartner_ID(), orig.getAD_OrgTrx_ID(),
+				orig.getC_LocFrom_ID(), orig.getC_LocTo_ID(), orig.getC_SalesRegion_ID(), orig.getC_Project_ID(),
+				orig.getC_Campaign_ID(), orig.getC_Activity_ID(), orig.getUser1_ID(), orig.getUser2_ID(),
+				orig.getUserElement1_ID(), orig.getUserElement2_ID(), get_TrxName());
 	}
 }

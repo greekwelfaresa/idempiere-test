@@ -2,13 +2,17 @@ package au.org.greekwelfaresa.idempiere.test.junit5.params;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.adempiere.exceptions.DBException;
+import org.compiere.model.PO;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
@@ -30,8 +34,11 @@ class QueryArgumentsProvider implements ArgumentsProvider, AnnotationConsumer<Qu
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws DBException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		return getIDempiereEnv(context).query(annotation.value(), annotation.where(), (Object[])annotation.params()).setApplyAccessFilter(annotation.accessFilter()).list()
-				.stream().limit(annotation.limit()).map(Arguments::of);
+		List<? extends PO> results = getIDempiereEnv(context).query(annotation.value(), annotation.where(), (Object[])annotation.params()).setApplyAccessFilter(annotation.accessFilter()).list();
+		if (results.isEmpty()) {
+			throw new ParameterResolutionException("No results found for " + annotation.value() + ", " + annotation.where() + ", " + Arrays.toString(annotation.params()));
+		}
+		return results.stream().limit(annotation.limit()).map(Arguments::of);
 	}
 
 	static IDempiereEnv getIDempiereEnv(ExtensionContext extensionContext) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {

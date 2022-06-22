@@ -1496,7 +1496,6 @@ public class IDempiereEnv implements AutoCloseable {
 
 	String getPriceListName() {
 		final String suffix = getStepMsgNameWithHash();
-		System.err.println("suffix: " + suffix);
 		if (suffix.length() < 60 - "PO_During: ".length()) {
 			return suffix;
 		}

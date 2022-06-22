@@ -1,5 +1,7 @@
 package au.org.greekwelfaresa.idempiere.test.assertj.fact_acct;
 
+import static java.math.BigDecimal.ZERO;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -23,7 +25,11 @@ public class Conditions {
 				if (value == null) {
 					return false;
 				}
-				final BigDecimal bd = value.getAmtAcctCr();
+				BigDecimal bd = value.getAmtAcctCr();
+				// Treat negative debit postings as credits
+				if (bd.compareTo(ZERO) == 0) {
+					bd = value.getAmtAcctDr().negate();
+				}
 				final BigDecimal comp = amt.setScale(bd.scale(), RoundingMode.HALF_UP);
 				return bd.equals(comp);
 			}
@@ -42,7 +48,11 @@ public class Conditions {
 				if (value == null) {
 					return false;
 				}
-				final BigDecimal bd = value.getAmtAcctDr();
+				BigDecimal bd = value.getAmtAcctDr();
+				// Treat negative credit postings as debits
+				if (bd.compareTo(ZERO) == 0) {
+					bd = value.getAmtAcctCr().negate();
+				}
 				final BigDecimal comp = amt.setScale(bd.scale(), RoundingMode.HALF_UP);
 				return bd.equals(comp);
 			}

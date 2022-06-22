@@ -113,7 +113,7 @@ public final class Representations {
 				if (object instanceof MFactAcct) {
 					MFactAcct fact = (MFactAcct) object;
 					return "[" + fact.get_ID() + "-Dr=" + fact.getAmtSourceDr() + "|" + fact.getAmtAcctDr() + ",Cr="
-							+ fact.getAmtSourceCr() + "|" + fact.getAmtAcctCr() + ","
+							+ fact.getAmtSourceCr() + "|" + fact.getAmtAcctCr() + ",Qty=" + fact.getQty() + ","
 							+ vc.toStringOf(fact.getMAccount()) + "]";
 				}
 				return super.toStringOf(object);

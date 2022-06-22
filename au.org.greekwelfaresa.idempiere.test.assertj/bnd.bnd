@@ -1,5 +1,7 @@
 -include: ${workspace}/cnf/idempiere/includes/idempiere.bnd
 
+src: src, src-gen
+
 -buildpath: \
 	${junit},\
 	${mockito},\

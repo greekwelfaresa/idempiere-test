@@ -45,6 +45,7 @@ import org.compiere.model.MAttributeSet;
 import org.compiere.model.MAttributeSetInstance;
 import org.compiere.model.MAttributeUse;
 import org.compiere.model.MBPBankAccount;
+import org.compiere.model.MBPGroup;
 import org.compiere.model.MBPartner;
 import org.compiere.model.MBPartnerLocation;
 import org.compiere.model.MBank;
@@ -171,6 +172,7 @@ public class IDempiereEnv implements AutoCloseable {
 	private String m_scenarioName = null;
 	private boolean m_isIncludeRandom = true;
 	private MBPartner m_bp = null;
+	private MBPGroup m_bpGroup = null;
 	private MBPartnerLocation m_bpLoc = null;
 	private MBPBankAccount m_bpBankAcct = null;
 	private MCountry m_country = null;
@@ -747,6 +749,14 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_datePriceList = datePriceList;
 	}
 
+	public MBPGroup getBPGroup() {
+		return m_bpGroup == null ? (mParentEnv == null ? null : mParentEnv.getBPGroup()) : m_bpGroup;
+	}
+	
+	public void setBPGroup(MBPGroup bpGroup) {
+		this.m_bpGroup = bpGroup;
+	}
+	
 	public MBPartner getBP() {
 		return m_bp == null ? (mParentEnv == null ? null : mParentEnv.getBP()) : m_bp;
 	}
@@ -1432,6 +1442,14 @@ public class IDempiereEnv implements AutoCloseable {
 		return mTrxName;
 	}
 
+	public MBPGroup createBPGroup() {
+		MBPGroup bpGroup = createPO(MBPGroup.class, null);
+		bpGroup.saveEx();
+		registerPO(bpGroup);
+		setBPGroup(bpGroup);
+		return bpGroup;
+	}
+	
 	public MBPartner createBP() {
 		return createBP(MBPartner.class);
 	}
@@ -1453,7 +1471,10 @@ public class IDempiereEnv implements AutoCloseable {
 		bp.setDescription(getStepMsgLong());
 		bp.setIsCustomer(true);
 		bp.setIsVendor(true);
-		bp.saveEx();
+		if (getBPGroup() != null) {
+			bp.setBPGroup(getBPGroup());
+		}
+		bp.saveEx(); 
 		registerPO(bp);
 		setBP(bp);
 
@@ -2968,5 +2989,22 @@ public class IDempiereEnv implements AutoCloseable {
 				orig.getC_LocFrom_ID(), orig.getC_LocTo_ID(), orig.getC_SalesRegion_ID(), orig.getC_Project_ID(),
 				orig.getC_Campaign_ID(), orig.getC_Activity_ID(), orig.getUser1_ID(), orig.getUser2_ID(),
 				orig.getUserElement1_ID(), orig.getUserElement2_ID(), get_TrxName());
+	}
+	
+	public MAccount defaultAccount(MAcctSchema schema, int accountID) {
+		return defaultAccount(schema.get_ID(), accountID, get_TrxName());
+	}
+	public MAccount defaultAccount(MAcctSchema schema, int accountID, String trxName) {
+		return defaultAccount(schema.get_ID(), accountID, trxName);
+	}
+	public MAccount defaultAccount(int schemaID, int accountID) {
+		return defaultAccount(schemaID, accountID, get_TrxName());
+	}
+	public MAccount defaultAccount(int schemaID, int accountID, String trxName) {
+		return MAccount.get(getCtx(), getClient().get_ID(), getOrg().get_ID(), schemaID, accountID,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, trxName);
 	}
 }

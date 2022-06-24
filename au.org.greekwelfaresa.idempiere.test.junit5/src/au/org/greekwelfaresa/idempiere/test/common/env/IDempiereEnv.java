@@ -1927,9 +1927,6 @@ public class IDempiereEnv implements AutoCloseable {
 				taxAcct.setT_Credit_Acct(newVC.get_ID());
 			}
 			taxAcct.saveEx();
-			System.err.println("Created tax accounting: " + taxAcct);
-			System.err.println("tax accrual: " + taxAcct.getT_Due_A() + " schema: " + taxAcct.getC_AcctSchema_ID());
-			System.err.println("tax expense: " + taxAcct.getT_Expense_A());
 		}
 		return retval;
 	}
@@ -2966,7 +2963,11 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MElementValue createAccount(String name, String accountType) {
-		MElementValue retval = createPO(MElementValue.class);
+		return createAccount(name, accountType, get_TrxName());
+	}
+	
+	public MElementValue createAccount(String name, String accountType, String trxName) {
+		MElementValue retval = createPO(MElementValue.class, trxName);
 		retval.setC_Element_ID(getCOA().get_ID());
 		retval.setName(name);
 		retval.setPostActual(true);

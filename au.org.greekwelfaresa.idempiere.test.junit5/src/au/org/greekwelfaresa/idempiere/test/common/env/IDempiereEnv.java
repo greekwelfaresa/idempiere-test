@@ -2771,6 +2771,7 @@ public class IDempiereEnv implements AutoCloseable {
 		if (rt == null) {
 			rt = createResourceType();
 		}
+		r.setS_ResourceType_ID(rt.get_ID());
 		r.setM_Warehouse_ID(getWarehouse().get_ID());
 		r.saveEx();
 		MProduct product = r.getProduct();

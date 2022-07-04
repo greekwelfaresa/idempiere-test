@@ -1851,6 +1851,10 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MTax createSummaryTax(MTax... children) {
+		return createSummaryTax(MTax.class, children);
+	}
+	
+	public <T extends MTax> T createSummaryTax(Class<T> clazz, MTax... children) {
 		if (children == null || children.length == 0) {
 			appendErrorMsg("No child taxes specified");
 		}
@@ -1882,7 +1886,7 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		validate();
 
-		MTax summary = createPO(MTax.class, null);
+		T summary = createPO(clazz, null);
 		summary.setSOPOType(type);
 		summary.setIsSummary(true);
 		summary.setIsDocumentLevel(docLevel);
@@ -1906,7 +1910,11 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MTax createTax(String rate, MElementValue expense, MElementValue due, MElementValue credit) {
-		MTax retval = createTax(rate);
+		return createTax(MTax.class, rate, expense, due, credit);
+	}
+	
+	public <T extends MTax> T createTax(Class<T> clazz, String rate, MElementValue expense, MElementValue due, MElementValue credit) {
+		T retval = createTax(clazz, rate);
 		List<X_C_Tax_Acct> acct = query(null, X_C_Tax_Acct.class, "C_Tax_ID=?", retval.get_ID()).list();
 		for (X_C_Tax_Acct taxAcct : acct) {
 			if (expense != null) {
@@ -1935,7 +1943,15 @@ public class IDempiereEnv implements AutoCloseable {
 		return createTax(new BigDecimal(rate));
 	}
 
+	public <T extends MTax> T createTax(Class<T> clazz, String rate) {
+		return createTax(clazz, new BigDecimal(rate));
+	}
+
 	public MTax createTax(BigDecimal rate) {
+		return createTax(MTax.class, rate);
+	}
+
+	public <T extends MTax> T createTax(Class<T> clazz, BigDecimal rate) {
 		// perform further validation if needed based on business logic
 		if (getDocType() == null) {
 			appendErrorMsg("DocType is Null");
@@ -1945,7 +1961,7 @@ public class IDempiereEnv implements AutoCloseable {
 		}
 		validate();
 
-		MTax tax = createPO(MTax.class, null);
+		T tax = createPO(clazz, null);
 		tax.setSOPOType(MTax.SOPOTYPE_Both);
 		tax.setRate(rate);
 		tax.setIsDocumentLevel(false);
@@ -2156,12 +2172,16 @@ public class IDempiereEnv implements AutoCloseable {
 		return io;
 	} // create inout
 
-	/**
+	public MInvoice createInvoiceHeader() {
+		return createInvoiceHeader(MInvoice.class);
+	}
+
+		/**
 	 * Creates an invoice with defaults, but no lines.
 	 * 
 	 * @return
 	 */
-	public MInvoice createInvoiceHeader() {
+	public <T extends MInvoice> T createInvoiceHeader(Class<T> clazz) {
 		// perform further validation if needed based on business logic
 		if (getDocType() == null) {
 			appendErrorMsg("DocType is Null");
@@ -2178,7 +2198,7 @@ public class IDempiereEnv implements AutoCloseable {
 		validate();
 
 		// create invoice header
-		MInvoice inv = new MInvoice(getCtx(), 0, get_TrxName());
+		T inv = createPO(clazz);
 		inv.setAD_Org_ID(getOrg().get_ID());
 		inv.setDescription(getStepMsgLong());
 		inv.setC_BPartner_ID(getBP().get_ID());

@@ -2,26 +2,21 @@ package au.org.greekwelfaresa.idempiere.test.common.env;
 
 import static org.adempiere.base.event.IEventManager.EVENT_DATA;
 import static org.adempiere.base.event.IEventTopics.PO_AFTER_NEW;
-import static org.adempiere.base.event.IEventTopics.PO_AFTER_CHANGE;
-import static org.adempiere.base.event.IEventTopics.PO_AFTER_DELETE;
-import static org.compiere.model.I_C_BPartner.COLUMNNAME_Name;
 import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.compiere.model.I_C_BPartner;
 import org.compiere.model.PO;
-import org.compiere.model.Query;
-import org.compiere.util.Msg;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.test.common.dictionary.Dictionaries;
 
@@ -52,6 +47,26 @@ public class PORecorder implements EventHandler, AutoCloseable {
 		return events;
 	}
 
+	public <T extends PO> List<T> getPOs(Class<T> clazz) {
+		return getPOStream(clazz).collect(Collectors.toList());
+	}
+
+	public <T extends PO> Stream<T> getPOStream(Class<T> clazz) {
+		return getEvents()
+				.stream()
+				.map(e -> e.getProperty(EVENT_DATA))
+				.filter(clazz::isInstance)
+				.map(clazz::cast);
+	}
+	
+	public <T extends PO> T getRequiredFirstPO(Class<T> clazz) {
+		return getFirstPO(clazz).get();
+	}
+	
+	public <T extends PO> Optional<T> getFirstPO(Class<T> clazz) {
+		return getPOStream(clazz).findFirst();
+	}
+	
 	@Override
 	public void close() {
 		reg.unregister();

@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import org.adempiere.base.Core;
+import org.adempiere.util.IProcessUI;
 import org.compiere.model.MPInstance;
 import org.compiere.model.MProcess;
 import org.compiere.model.PO;
@@ -39,6 +40,7 @@ public class ProcessController<P extends ProcessCall> {
 	private int mRecordID = 0;
 	private Trx mTrx;
 	private MProcess mProcessPO;
+	private IProcessUI mProcessUI;
 	private String mName;
 	private CLogger mLog;
 	private ProcessInfo mProcessInfo;
@@ -93,6 +95,11 @@ public class ProcessController<P extends ProcessCall> {
 	
 	public ProcessController<P> withName(String name) {
 		mName = name;
+		return this;
+	}
+	
+	public ProcessController<P> withProcessUI(IProcessUI processUI) {
+		mProcessUI = processUI;
 		return this;
 	}
 	
@@ -167,6 +174,7 @@ public class ProcessController<P extends ProcessCall> {
 			mEnv.registerPO(mpi);
 			mProcessInfo.setAD_PInstance_ID(mpi.get_ID());
 		}
+		mProcess.setProcessUI(mProcessUI);
 	}
 	
 	public boolean start() {

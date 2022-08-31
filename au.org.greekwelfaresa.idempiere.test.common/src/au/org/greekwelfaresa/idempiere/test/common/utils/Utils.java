@@ -219,11 +219,13 @@ public class Utils {
 
 	static final String FORMAT1 = "yyyy-MM-dd";
 	static final String FORMAT2 = "yyyy-MM-dd HH:mm";
+	static final String FORMAT3 = "yyyy-MM-dd HH:mm:ss";
+	static final SimpleDateFormat SDF2 = new SimpleDateFormat(FORMAT2);
+	static final SimpleDateFormat SDF3 = new SimpleDateFormat(FORMAT3);
 
 	public static final DateFormat FMT = new SimpleDateFormat(FORMAT1);
 	public static final DateFormat DT_FMT = new DateFormat() {
 		private static final long serialVersionUID = 1L;
-		final SimpleDateFormat sdf2 = new SimpleDateFormat(FORMAT2);
 
 		@Override
 		public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
@@ -232,9 +234,14 @@ public class Utils {
 
 		@Override
 		public Date parse(String source, ParsePosition pos) {
-			if (source.length() - pos.getIndex() == FORMAT1.length())
+			final int length = source.length() - pos.getIndex();
+			if (length == FORMAT1.length()) {
 				return FMT.parse(source, pos);
-			return sdf2.parse(source, pos);
+			}
+			if (length == FORMAT2.length()) {
+				return SDF2.parse(source, pos);
+			}
+			return SDF3.parse(source, pos);
 		}
 	};
 

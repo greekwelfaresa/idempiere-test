@@ -542,7 +542,8 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	static String createShortTrxName(String base) {
-		return (base.length() > 54 ? base.substring(0, 54) : base) + "_" + UUID.randomUUID().toString().substring(0, 8);
+		final int length = 60 - 37;
+		return (base.length() > length ? base.substring(0, length) : base) + "_" + UUID.randomUUID().toString();
 	}
 
 	public void before() throws Exception {
@@ -2073,7 +2074,7 @@ public class IDempiereEnv implements AutoCloseable {
 		PO po = (PO) doc;
 		if (getDocAction() != null) {
 			if (getLog() != null)
-				getLog().log(Level.SEVERE, "Starting DocAction: " + getDocAction());
+				getLog().log(Level.INFO, "Starting DocAction: " + getDocAction());
 
 			// Call setDocAction on the PO if it has such a method.
 
@@ -2096,7 +2097,7 @@ public class IDempiereEnv implements AutoCloseable {
 			}
 		}
 		if (getLog() != null) {
-			getLog().log(Level.SEVERE, "Saving PO after processing. Doc Status: " + doc.getDocStatus());
+			getLog().log(Level.INFO, "Saving PO after processing. Doc Status: " + doc.getDocStatus());
 		}
 		po.saveEx();
 	}

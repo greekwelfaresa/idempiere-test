@@ -1672,6 +1672,17 @@ public class IDempiereEnv implements AutoCloseable {
 		return a;
 	}
 
+	public MProduct getOrCreateProduct(String value) {
+		MProduct product = queryFirstOnly(MProduct.class, "Value=?", value);
+		if (product == null) {
+			product = createProduct();
+			product.setValue(value);
+			product.saveEx();
+		}
+		setProduct(product);
+		return product;
+	}
+	
 	// create product second
 	public MProduct createProduct() {
 		// perform further validation if needed based on business logic

@@ -2000,6 +2000,7 @@ public class IDempiereEnv implements AutoCloseable {
 		order.setAD_Org_ID(getOrg().get_ID());
 		order.setDescription(getStepMsgLong());
 		order.setC_DocTypeTarget_ID(getDocType().get_ID());
+		order.setDateAcct(getDate());
 		order.setDateOrdered(getDate());
 		order.setDatePromised(getDate());
 		order.setIsSOTrx(getDocType().isSOTrx());
@@ -2245,6 +2246,7 @@ public class IDempiereEnv implements AutoCloseable {
 		inv.setM_PriceList_ID(getDocType().isSOTrx() ? getBP().getM_PriceList_ID() : getBP().getPO_PriceList_ID());
 		inv.setC_DocType_ID(getDocType().get_ID());
 		inv.setDateInvoiced(getDate());
+		inv.setDateAcct(getDate());
 		inv.setIsSOTrx(getDocType().isSOTrx());
 		if (getOrder() != null) {
 			inv.setC_Order_ID(getOrder().get_ID());

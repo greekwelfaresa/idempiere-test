@@ -638,7 +638,12 @@ public class IDempiereEnv implements AutoCloseable {
 							getLog().log(Level.WARNING, "Error trying to run cleanup for : " + po + ", error: " + e, e);
 						}
 					}
-					po.deleteEx(true, null);
+					PO.setCrossTenantSafe();
+					try {
+						po.deleteEx(true, null);
+					} finally {
+						PO.clearCrossTenantSafe();
+					}
 				} catch (Exception e) {
 					getLog().log(Level.WARNING, "Error trying to delete: " + po + ", error: " + e, e);
 				}

@@ -418,7 +418,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public <T extends PO> Query query(Class<T> clazz, String where, Object... parameters) {
-		return query(get_TrxName(), clazz, where, parameters);
+		return query(get_TrxName(), clazz, where, parameters).setApplyAccessFilter(true);
 	}
 
 	@SuppressWarnings("unchecked")

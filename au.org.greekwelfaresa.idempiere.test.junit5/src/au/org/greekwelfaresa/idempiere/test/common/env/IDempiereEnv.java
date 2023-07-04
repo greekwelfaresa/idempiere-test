@@ -402,6 +402,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	private List<WeakReference<AutoCloseable>> toBeClosed = new ArrayList<>();
+	private Properties mOldCtx;
 
 	public <T extends PO> Query query(Class<T> clazz) {
 		return query(clazz, "1=1");
@@ -553,7 +554,9 @@ public class IDempiereEnv implements AutoCloseable {
 			mParentEnv.reloadPOs();
 			ourTrx = false;
 		}
-
+		mOldCtx = mCtx;
+		mCtx = new Properties(mCtx);
+		
 		// From ChuBoePopulateVO
 		m_client = new MClient(mCtx, mClientId, mTrxName);
 		m_org = new MOrg(mCtx, mOrgId, mTrxName);
@@ -607,6 +610,8 @@ public class IDempiereEnv implements AutoCloseable {
 			} catch (Exception e) {
 			}
 		}
+		mCtx = mOldCtx;
+		mOldCtx = null;
 		if (mAutoRollback) {
 			if (mSavePoint != null) {
 				mTrx.rollback(mSavePoint);

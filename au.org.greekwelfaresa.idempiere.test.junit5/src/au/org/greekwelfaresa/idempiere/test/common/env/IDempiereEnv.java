@@ -320,11 +320,8 @@ public class IDempiereEnv implements AutoCloseable {
 			this.warehouseId = parameters.warehouseId();
 			this.roleId = parameters.roleId();
 			this.autoRollback = parameters.autoRollback();
-//			System.err.println("About to set the timestamp: " + parameters.timestamp());
 			if (parameters.timestamp() != null && !"".equals(parameters.timestamp())) {
-//				System.err.println("Setting the timestamp: ");
 				this.date = timestamp(parameters.timestamp());
-//				System.err.println("Sett the timestamp to: " + date);
 			}
 			return this;
 		}
@@ -361,9 +358,7 @@ public class IDempiereEnv implements AutoCloseable {
 		m_date = TimeUtil.trunc(date, TimeUtil.TRUNC_DAY);
 
 		mCtx = Env.getCtx();
-//		System.err.println("clientId is actually: " + mClientId);
-//		System.err.println("orgId is actually: " + mOrgId);
-//		Thread.dumpStack();
+		
 		mCtx.setProperty(Env.AD_CLIENT_ID, String.valueOf(mClientId));
 		mCtx.setProperty(Env.AD_ORG_ID, String.valueOf(mOrgId));
 		mCtx.setProperty(Env.AD_USER_ID, String.valueOf(mUserId));
@@ -605,7 +600,6 @@ public class IDempiereEnv implements AutoCloseable {
 	public void close() throws Exception {
 		recorders.forEach(PORecorder::close);
 		recorders.clear();
-//		System.err.println("Closing environment: " + this + ", " + mAutoRollback);
 		logMap.clear();
 		for (WeakReference<AutoCloseable> c : toBeClosed) {
 			try {
@@ -614,17 +608,13 @@ public class IDempiereEnv implements AutoCloseable {
 			}
 		}
 		if (mAutoRollback) {
-//			System.err.println(" ====> className: " + mClassName + ", " + mMethodName);
 			if (mSavePoint != null) {
-//				System.err.println("   rolling back save point: " + mSavePoint.getSavepointName());
 				mTrx.rollback(mSavePoint);
 				mSavePoint = null;
 			} else {
-//				System.err.println("  rolling back whole transaction");
 				mTrx.rollback(true);
 				if (ourTrx) {
 					try {
-//						System.err.println("   Closing rolled-back transaction: " + mTrx.getTrxName());
 						mTrx.close();
 					} catch (Exception e) {
 					}

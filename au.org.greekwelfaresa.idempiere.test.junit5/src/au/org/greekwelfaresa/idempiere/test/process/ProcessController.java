@@ -7,7 +7,6 @@ import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.setField;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoLog;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.util.CLogger;
-import org.compiere.util.Env;
 import org.compiere.util.Trx;
 import org.osgi.test.common.exceptions.Exceptions;
 

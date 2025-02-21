@@ -57,7 +57,12 @@ public class ProcessController<P extends ProcessCall> {
 	
 	@SuppressWarnings("unchecked")
 	public ProcessController(String processType, IDempiereEnv env) {
-		this((P)Core.getProcess(processType), env);
+		P p = (P)Core.getProcess(processType);
+		
+		if (p == null) {
+			throw new IllegalStateException("Couldn't instantiate process type '" + processType + "'");
+		}
+		initialise(p, env);
 	}
 	
 	public ProcessController(Class<P> processType, IDempiereEnv env) {
@@ -65,6 +70,10 @@ public class ProcessController<P extends ProcessCall> {
 	}
 	
 	public ProcessController(P process, IDempiereEnv env) {
+		initialise(process, env);
+	}
+
+	private void initialise(P process, IDempiereEnv env) {
 		if (process.getClass().getName().endsWith("ProcessCallWrapper")) {
 			mProcess = getField(process, "process");
 		} else {

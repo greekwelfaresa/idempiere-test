@@ -77,7 +77,6 @@ public class Utils {
 	}
 
 	public static Field getField(Class<?> clazz, String fieldName) {
-		System.err.println("Looking in class: " + clazz.getCanonicalName());
 		try {
 			return clazz.getDeclaredField(fieldName);
 		} catch (NoSuchFieldException e) {

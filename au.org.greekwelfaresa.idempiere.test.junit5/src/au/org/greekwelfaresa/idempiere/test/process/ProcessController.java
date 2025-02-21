@@ -67,12 +67,16 @@ public class ProcessController<P extends ProcessCall> {
 	}
 	
 	public ProcessController(P process, IDempiereEnv env) {
-		mProcess = process;
+		if (process.getClass().getName().endsWith("ProcessCallWrapper")) {
+			mProcess = getField(process, "process");
+		} else {
+			mProcess = process;
+		}
 		mCtx = env.getCtx();
 		mTrxName = env.get_TrxName();
 		mTrx = env.getTrx();
 		mName = null;
-		mLog = injectMockLog(process);
+		mLog = injectMockLog(mProcess);
 		mEnv = env;
 	}
 	

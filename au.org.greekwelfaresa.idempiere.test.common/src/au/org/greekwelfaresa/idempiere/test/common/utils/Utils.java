@@ -1,5 +1,6 @@
 package au.org.greekwelfaresa.idempiere.test.common.utils;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import java.lang.reflect.Field;
@@ -14,12 +15,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import org.compiere.Adempiere;
-import org.compiere.model.ServerStateChangeEvent;
-import org.compiere.model.ServerStateChangeListener;
 import org.compiere.util.CLogger;
 import org.osgi.test.common.exceptions.Exceptions;
 
@@ -38,38 +34,10 @@ public class Utils {
 		return parseTS(ts);
 	}
 
-	public static void waitForAdempiereStart() {
-		CountDownLatch flag = new CountDownLatch(1);
-		synchronized (Adempiere.class) {
-			if (Adempiere.isStarted()) {
-				return;
-			} else {
-				// Can't reference "this" from within a lamda expression - that's why this is an
-				// anonymous inner class instead.
-				final ServerStateChangeListener l = new ServerStateChangeListener() {
-					@Override
-					public void stateChange(ServerStateChangeEvent event) {
-						if (event.getEventType() == ServerStateChangeEvent.SERVER_START) {
-							flag.countDown();
-							Adempiere.removeServerStateChangeListener(this);
-						}
-					}
-				};
-				Adempiere.addServerStateChangeListener(l);
-			}
-		}
-		try {
-			if (!flag.await(30, TimeUnit.SECONDS)) {
-				throw new IllegalStateException("iDempiere still not started after 30s");
-			}
-		} catch (InterruptedException e) {
-			throw new IllegalStateException("Interrupted while for iDempiere to start", e);
-		}
-	}
-
 	public static CLogger injectMockLog(Object object) {
 		CLogger orig = getField(object, "log");
-		CLogger mockLog = spy(orig);
+//		CLogger mockLog = spy(orig);
+		CLogger mockLog = mock(CLogger.class);
 		try {
 			setField(object, "log", mockLog);
 		} catch (Exception e) {
@@ -109,6 +77,7 @@ public class Utils {
 	}
 
 	public static Field getField(Class<?> clazz, String fieldName) {
+		System.err.println("Looking in class: " + clazz.getCanonicalName());
 		try {
 			return clazz.getDeclaredField(fieldName);
 		} catch (NoSuchFieldException e) {

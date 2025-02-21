@@ -2,9 +2,7 @@ package au.org.greekwelfaresa.idempiere.test.common.env;
 
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ONE;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.BD_ZERO;
-import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.timestamp;
-import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.waitForAdempiereStart;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -135,6 +133,7 @@ import org.osgi.test.common.exceptions.Exceptions;
 import org.osgi.test.common.exceptions.RunnableWithException;
 
 import au.org.greekwelfaresa.idempiere.test.common.annotation.InjectIDempiereEnv;
+import au.org.greekwelfaresa.idempiere.test.common.utils.IDempiereStartup;
 import au.org.greekwelfaresa.idempiere.test.process.ProcessController;
 
 public class IDempiereEnv implements AutoCloseable {
@@ -167,6 +166,7 @@ public class IDempiereEnv implements AutoCloseable {
 	private MOrg m_org = null;
 	private MUser m_user = null;
 	private MWarehouse m_warehouse = null;
+	private String m_invoiceRule = null;
 	private Timestamp m_date = null;
 	private Timestamp m_dateInitial = null;
 	private Timestamp m_datePriceList = null;
@@ -364,7 +364,7 @@ public class IDempiereEnv implements AutoCloseable {
 		mCtx.setProperty(Env.AD_USER_ID, String.valueOf(mUserId));
 		mCtx.setProperty(Env.AD_ROLE_ID, String.valueOf(mRoleId));
 		mCtx.setProperty(Env.M_WAREHOUSE_ID, String.valueOf(mWarehouseId));
-		waitForAdempiereStart();
+		IDempiereStartup.waitForAdempiereStart();
 
 	}
 
@@ -721,6 +721,14 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_warehouse = m_warehouse;
 	}
 
+	public String getInvoiceRule() {
+		return m_invoiceRule;
+	}
+
+	public void setInvoiceRule(String m_invoiceRule) {
+		this.m_invoiceRule = m_invoiceRule;
+	}
+
 	public Timestamp getDate() {
 		return m_date;
 	}
@@ -729,12 +737,20 @@ public class IDempiereEnv implements AutoCloseable {
 		this.m_date = m_date;
 	}
 
+	public void setDateS(String m_date) {
+		this.m_date = timestamp(m_date);
+	}
+
 	public Timestamp getDateInitial() {
 		return m_dateInitial;
 	}
 
 	public void setDateInitial(Timestamp m_date) {
 		this.m_dateInitial = m_date;
+	}
+
+	public void setDateInitialS(String m_date) {
+		this.m_dateInitial = timestamp(m_date);
 	}
 
 	public void setDateOffset(int days) {
@@ -747,6 +763,10 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public void setDatePriceList(Timestamp datePriceList) {
 		this.m_datePriceList = datePriceList;
+	}
+
+	public void setDatePriceListS(String datePriceList) {
+		this.m_datePriceList = timestamp(datePriceList);
 	}
 
 	public MBPGroup getBPGroup() {
@@ -763,6 +783,13 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public void setBP(MBPartner m_bp) {
 		this.m_bp = m_bp;
+		if (getBPLoc() != null) {
+			MBPartnerLocation bpLoc = getBPLoc();
+			if(bpLoc.getC_BPartner_ID() == m_bp.get_ID()) {
+				return;
+			}
+		}
+		this.m_bpLoc = m_bp.getLocation(0);
 	}
 
 	public MBPBankAccount getBPBankAcct() {
@@ -1678,8 +1705,23 @@ public class IDempiereEnv implements AutoCloseable {
 			product = createProduct();
 			product.setValue(value);
 			product.saveEx();
+		} else {
+			addProductToPriceLists(product);
+			setProduct(product);
 		}
-		setProduct(product);
+		return product;
+	}
+	
+	public MProduct getOrCreateService(String value) {
+		MProduct product = queryFirstOnly(MProduct.class, "Value=?", value);
+		if (product == null) {
+			product = createService();
+			product.setValue(value);
+			product.saveEx();
+		} else {
+			addProductToPriceLists(product);
+			setProduct(product);
+		}
 		return product;
 	}
 	
@@ -1744,7 +1786,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public void addProductToPriceLists(MProduct product, String trxName) {
-		if (getBP() != null) {
+//		if (getBP() != null) {
 			// create PO and SO price list entries
 			MPriceList spl = getPriceListSO();
 			MPriceList ppl = getPriceListPO();
@@ -1809,7 +1851,7 @@ public class IDempiereEnv implements AutoCloseable {
 			sprice.setPriceList(getListPriceSO());
 			sprice.saveEx();
 			registerPO(sprice);
-		}
+//		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -2005,6 +2047,12 @@ public class IDempiereEnv implements AutoCloseable {
 		order.setDatePromised(getDate());
 		order.setIsSOTrx(getDocType().isSOTrx());
 		order.setBPartner(getBP());
+		if (getBPLoc() != null) {
+			order.setC_BPartner_Location_ID(getBPLoc().get_ID());
+		}
+		if (getInvoiceRule() != null) {
+			order.setInvoiceRule(m_invoiceRule);
+		}
 		order.setM_PriceList_ID(getDocType().isSOTrx() ? getPriceListSO().get_ID() : getPriceListPO().get_ID());
 		order.setM_Warehouse_ID(getWarehouse().get_ID());
 		if (getProject() != null) {
@@ -2111,7 +2159,11 @@ public class IDempiereEnv implements AutoCloseable {
 		if (getLog() != null) {
 			getLog().log(Level.INFO, "Saving PO after processing. Doc Status: " + doc.getDocStatus());
 		}
+		final String msg = doc.getProcessMsg();
 		po.saveEx();
+		if (msg != null && !"".equals(msg)) {
+			throw new IllegalStateException("Processing failed: " + msg);
+		}
 	}
 
 	public MProject createProject() {
@@ -2146,6 +2198,21 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MInOut createInOut() {
+		MInOut io = createInOutHeader();
+		createInOutLine();
+		process(io);
+//		if (getDocAction() != null) {
+//			System.err.println("DocAction!!!: " + getDocAction());
+//			io.setDocAction(getDocAction());
+//			io.processIt(getDocAction());
+//		} else {
+//			System.err.println("DocAction was null!!!");
+//		}
+//		io.saveEx();
+		return io;
+	}
+	
+	public MInOut createInOutHeader() {
 		validate();
 
 		// perform further validation if needed based on business logic
@@ -2163,8 +2230,19 @@ public class IDempiereEnv implements AutoCloseable {
 		} else if (!getOrder().getDocStatus().equals(X_C_Order.DOCSTATUS_Completed)) {
 			appendErrorMsg("Order Not Completed");
 		}
-		validate();
 
+		MDocType dt = getDocType();
+		final String movementType = MInOut.getMovementType(getCtx(), dt.getC_DocType_ID(), dt.isSOTrx(), get_TrxName());
+		if (movementType == null) {
+			if (dt.getC_DocTypeShipment() != null) {
+				dt = (MDocType)dt.getC_DocTypeShipment();
+			} else {
+				appendErrorMsg("Document type " + getDocType() + " does not have an associated movement type");
+			}
+		}
+		
+		validate();
+		
 		// create inout header
 		MInOut io = new MInOut(getCtx(), 0, get_TrxName());
 		io.setAD_Org_ID(getOrg().get_ID());
@@ -2172,28 +2250,40 @@ public class IDempiereEnv implements AutoCloseable {
 		io.setC_BPartner_ID(getBP().get_ID());
 		io.setC_BPartner_Location_ID(getBPLoc().get_ID());
 		io.setAD_User_ID(getUser().get_ID());
-		io.setC_DocType_ID(getDocType().get_ID());
+		io.setC_DocType_ID(dt.get_ID());
 		io.setC_Order_ID(getOrder().get_ID());
 		io.setM_Warehouse_ID(getWarehouse().get_ID());
 		io.setMovementDate(getDate());
 		io.setDateAcct(getDate());
-		io.setIsSOTrx(getDocType().isSOTrx());
-		io.setMovementType(getDocType().isSOTrx() ? X_M_InOut.MOVEMENTTYPE_CustomerShipment
+		io.setIsSOTrx(dt.isSOTrx());
+		io.setMovementType(dt.isSOTrx() ? X_M_InOut.MOVEMENTTYPE_CustomerShipment
 				: X_M_InOut.MOVEMENTTYPE_VendorReceipts);
-
+		
 		io.saveEx();
 		setInOut(io);
 
+		return io;
+	} // create inout
+
+	public MInOutLine createInOutLine() {
+		return createInOutLine(getInOut(), getOrderLine());
+	}
+	
+	public MInOutLine createInOutLine(MOrderLine ol) {
+		return createInOutLine(getInOut(), ol);
+	}
+	
+	public MInOutLine createInOutLine(MInOut header, MOrderLine ol) {
 		// create inout line
 		MInOutLine iol = new MInOutLine(getCtx(), 0, get_TrxName());
 		iol.setAD_Org_ID(getOrg().get_ID());
 		iol.setDescription(getStepMsgLong());
-		iol.setM_InOut_ID(getInOut().get_ID());
+		iol.setM_InOut_ID(header.get_ID());
 		iol.setM_Product_ID(getProduct().get_ID());
 		iol.setM_AttributeSetInstance_ID(0);
 		iol.setM_Warehouse_ID(getWarehouse().get_ID());
 		iol.setM_Locator_ID(getWarehouse().getDefaultLocator().get_ID());
-		iol.setC_OrderLine_ID(getOrderLine().get_ID());
+		iol.setC_OrderLine_ID(ol.get_ID());
 		iol.setC_UOM_ID(getProduct().getC_UOM_ID());
 		if (getQty() == null || getQty().compareTo(Env.ZERO) == 0)
 			iol.setQty(Env.ONE);
@@ -2202,15 +2292,9 @@ public class IDempiereEnv implements AutoCloseable {
 
 		iol.saveEx();
 		setInOutLine(iol);
-
-		if (getDocAction() != null) {
-			io.setDocAction(getDocAction());
-			io.processIt(getDocAction());
-		}
-		io.saveEx();
-		return io;
-	} // create inout
-
+		return iol;
+	}
+	
 	public MInvoice createInvoiceHeader() {
 		return createInvoiceHeader(MInvoice.class);
 	}
@@ -2428,8 +2512,8 @@ public class IDempiereEnv implements AutoCloseable {
 		try {
 			Constructor<T> c = type.getConstructor(Properties.class, int.class, String.class);
 			T retval = c.newInstance(getCtx(), id, trxName);
-			CLogger log = injectMockLog(retval);
-			logMap.put(System.identityHashCode(retval), log);
+//			CLogger log = injectMockLog(retval);
+//			logMap.put(System.identityHashCode(retval), log);
 			return retval;
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			throw new IllegalArgumentException("Couldn't find PO's constructor for type " + type, e);

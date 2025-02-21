@@ -11,7 +11,7 @@
 	org.idempiere.webservices,\
 	au.org.greekwelfaresa.idempiere.test.assertj
 
-Export-Package: au.org.greekwelfaresa.idempiere.test.assertj,au.org.greekwelfaresa.idempiere.test.assertj.*
+Export-Package: au.org.greekwelfaresa.idempiere.test.assertj.ws_*
 
 Import-Package: \
 	${compiere.importpackage},\

@@ -4,13 +4,16 @@ import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.getField;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.invoke;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.setField;
+import static java.util.stream.Collectors.joining;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.adempiere.base.Core;
@@ -227,5 +230,21 @@ public class ProcessController<P extends ProcessCall> {
 			mRecordID = record.get_ID();
 		}
 		return this;
+	}
+	
+	public ProcessController<P> withRecordIDs(int... ids) {
+		return withRecordIDs(IntStream.of(ids));
+	}
+
+	public ProcessController<P> withRecordIDs(IntStream ids) {
+		return withParameter("*RecordIDs*", "[" + ids.mapToObj(String::valueOf).collect(joining(", ")) + "]");
+	}
+
+	public ProcessController<P> withRecordIDs(Stream<Integer> ids) {
+		return withRecordIDs(ids.mapToInt(Integer::valueOf));
+	}
+
+	public ProcessController<P> withRecordIDs(Collection<Integer> ids) {
+		return withRecordIDs(ids.stream());
 	}
 }

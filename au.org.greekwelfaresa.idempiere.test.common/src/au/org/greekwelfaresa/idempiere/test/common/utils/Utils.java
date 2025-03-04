@@ -35,7 +35,7 @@ public class Utils {
 	}
 
 	public static CLogger injectMockLog(Object object) {
-		CLogger orig = getField(object, "log");
+//		CLogger orig = getField(object, "log");
 //		CLogger mockLog = spy(orig);
 		CLogger mockLog = mock(CLogger.class);
 		try {
@@ -111,15 +111,29 @@ public class Utils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <R> R invoke(Object object, String method) {
 		if (object == null) {
 			throw new NullPointerException("object is null");
 		}
+		return invoke(object.getClass(), object, method);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <R> R invoke(Class<?> c, Object object, String method) {
+		if (object == null) {
+			throw new NullPointerException("object is null");
+		}
 		try {
-			Method m = object.getClass().getDeclaredMethod(method);
-			m.setAccessible(true);
-			return (R) m.invoke(object);
+			try {
+				Method m = c.getDeclaredMethod(method);
+				m.setAccessible(true);
+				return (R) m.invoke(object);
+			} catch (NoSuchMethodException e) {
+				if (c == Object.class) {
+					throw Exceptions.duck(e);
+				}
+				return invoke(c.getSuperclass(), object, method);
+			}
 		} catch (InvocationTargetException e) {
 			throw Exceptions.duck(e.getTargetException());
 		} catch (Exception e) {
@@ -127,15 +141,29 @@ public class Utils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <R> R invoke(Object object, String method, Class<?>[] parameterTypes, Object... args) {
 		if (object == null) {
 			throw new NullPointerException("object is null");
 		}
+		return invoke(object.getClass(), object, method, parameterTypes, args);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <R> R invoke(Class<?> c, Object object, String method, Class<?>[] parameterTypes, Object... args) {
+		if (object == null) {
+			throw new NullPointerException("object is null");
+		}
 		try {
-			Method m = object.getClass().getDeclaredMethod(method, parameterTypes);
-			m.setAccessible(true);
-			return (R) m.invoke(object, args);
+			try {
+				Method m = c.getDeclaredMethod(method, parameterTypes);
+				m.setAccessible(true);
+				return (R) m.invoke(object, args);
+			} catch (NoSuchMethodException e) {
+				if (c == Object.class) {
+					throw Exceptions.duck(e);
+				}
+				return invoke(c.getSuperclass(), object, method, parameterTypes, args);
+			}
 		} catch (InvocationTargetException e) {
 			throw Exceptions.duck(e.getTargetException());
 		} catch (Exception e) {

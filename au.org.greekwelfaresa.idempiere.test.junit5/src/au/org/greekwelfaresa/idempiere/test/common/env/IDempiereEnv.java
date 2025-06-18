@@ -411,7 +411,7 @@ public class IDempiereEnv implements AutoCloseable {
 	public <T extends PO> Query query(String trxName, Class<T> clazz, String where, Object... parameters) {
 		try {
 			String tableName = (String) clazz.getField("Table_Name").get(null);
-			return new Query(getCtx(), tableName, where, get_TrxName()).setParameters(parameters);
+			return new Query(getCtx(), tableName, where, trxName).setParameters(parameters);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error running query: " + e.getMessage(), e);
 		}
@@ -484,6 +484,20 @@ public class IDempiereEnv implements AutoCloseable {
 	 */
 	public MAttachment getAttachmentFor(PO po) {
 		return MAttachment.get(mCtx, po.get_Table_ID(), po.get_ID(), mTrxName);
+	}
+
+	/**
+	 * Create an attachment for the given PO from within the current transaction.
+	 * 
+	 * {@link PO#createAttachment()} does not reference the current transaction of the
+	 * PO and so attachments created in an uncommitted SQL tx won't be visible. Use
+	 * this method instead to retrieve them.
+	 * 
+	 * @param po The PO whose attachment is being retrieved.
+	 * @return The attachment for the given PO (if any).
+	 */
+	public MAttachment createAttachmentFor(PO po) {
+		return new MAttachment(mCtx, po.get_Table_ID(), po.get_ID(), mTrxName);
 	}
 
 	public int getC_Calendar_ID() {
@@ -593,10 +607,14 @@ public class IDempiereEnv implements AutoCloseable {
 
 	List<PORecorder> recorders = new ArrayList<>();
 
-	public PORecorder startRecorder() {
-		PORecorder recorder = new PORecorder(mTrxName);
+	public PORecorder startRecorder(String trxName) {
+		PORecorder recorder = new PORecorder(trxName);
 		recorders.add(recorder);
 		return recorder;
+	}
+	
+	public PORecorder startRecorder() {
+		return startRecorder(mTrxName);
 	}
 
 	@Override
@@ -2888,6 +2906,7 @@ public class IDempiereEnv implements AutoCloseable {
 		MProduct product = r.getProduct();
 		addProductToPriceLists(product);
 		registerPO(r);
+		registerPO(product);
 		setResource(r);
 		// ADempiere's MResource will automatically create the corresponding product for
 		// the resource.

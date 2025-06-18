@@ -49,7 +49,9 @@ public abstract class AbstractIDAssert<SELF extends AbstractIDAssert<SELF, ACTUA
 			}
 			expectedField = new Timestamp(millis);
 		}
-		if (!Objects.equals(actualField, expectedField)) {
+		if (expectedField == null && actualField != null
+				|| actualField == null && expectedField != null 
+				|| actualField != null && expectedField != null && Math.abs(actualField.getTime() - expectedField.getTime()) > 500) {
 			failWithActualExpectedAndMessage(actualField, expectedField, "\nExpecting %s\n to have %s:\n <%s>\nbut it was:\n <%s>",
 				getDescription(), fieldName, expectedField, actualField);
 		}

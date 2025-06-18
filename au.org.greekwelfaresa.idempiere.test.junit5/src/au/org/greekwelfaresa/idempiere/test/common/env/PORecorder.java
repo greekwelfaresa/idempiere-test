@@ -4,10 +4,8 @@ import static org.adempiere.base.event.IEventManager.EVENT_DATA;
 import static org.adempiere.base.event.IEventTopics.PO_AFTER_NEW;
 import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;

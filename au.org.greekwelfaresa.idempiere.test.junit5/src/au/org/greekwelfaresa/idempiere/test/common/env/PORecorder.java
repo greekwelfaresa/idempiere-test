@@ -9,6 +9,7 @@ import java.util.Dictionary;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,12 +37,12 @@ public class PORecorder implements EventHandler, AutoCloseable {
 	public void handleEvent(Event event) {
 		PO po = (PO) event.getProperty(EVENT_DATA);
 
-		if (Objects.equals(po.get_TrxName(), trxName)) {
+		if (trxName == null || trxName.equals(po.get_TrxName())) {
 			events.add(event);
 		}
 	}
 	
-	List<Event> events = new ArrayList<>();
+	List<Event> events = new CopyOnWriteArrayList<>();
 	
 	public List<Event> getEvents() {
 		return events;

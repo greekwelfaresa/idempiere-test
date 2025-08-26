@@ -1287,7 +1287,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MCountry getCountry() {
-		return m_country;
+		return m_country == null ? (mParentEnv == null ? null : mParentEnv.getCountry()) : m_country;
 	}
 
 	public void setCountry(MCountry m_country) {
@@ -1295,7 +1295,7 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MRegion getRegion() {
-		return m_region;
+		return m_region == null ? (mParentEnv == null ? null : mParentEnv.getRegion()) : m_region;
 	}
 
 	public void setRegion(MRegion m_region) {

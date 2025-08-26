@@ -242,6 +242,16 @@ public class ProcessController<P extends ProcessCall> {
 		return this;
 	}
 
+	public ProcessController<P> withTrx(Trx trx) {
+		mTrx = trx;
+		return this;
+	}
+
+	public ProcessController<P> withTrxName(String trxName, boolean createNew) {
+		mTrx = Trx.get(trxName, createNew);
+		return this;
+	}
+
 	public ProcessController<P> withRecordIDs(int... ids) {
 		return withRecordIDs(IntStream.of(ids));
 	}

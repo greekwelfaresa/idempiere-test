@@ -9,6 +9,5 @@
 	au.org.greekwelfaresa.idempiere.test.common,\
 	org.osgi.service.event,\
 	org.osgi.service.component.annotations,\
-	osgi.core
-
-Import-Package: *
+	osgi.core,\
+	org.osgi.test.junit5

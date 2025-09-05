@@ -252,6 +252,11 @@ public class ProcessController<P extends ProcessCall> {
 		return this;
 	}
 
+	public ProcessController<P> withRecordID(int id) {
+		mRecordID = id;
+		return this;
+	}
+	
 	public ProcessController<P> withRecordIDs(int... ids) {
 		return withRecordIDs(IntStream.of(ids));
 	}

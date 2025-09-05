@@ -77,7 +77,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotSummary() {
 		isNotNull();
-		if (!actual.isSummary()) {
+		if (actual.isSummary()) {
 			failWithMessage("\nExpecting ProcessInfo to not be Summary\nbut it was");
 		}
 		return myself;
@@ -102,7 +102,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotError() {
 		isNotNull();
-		if (!actual.isError()) {
+		if (actual.isError()) {
 			failWithMessage("\nExpecting ProcessInfo to not be Error\nbut it was");
 		}
 		return myself;
@@ -118,7 +118,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotBatch() {
 		isNotNull();
-		if (!actual.isBatch()) {
+		if (actual.isBatch()) {
 			failWithMessage("\nExpecting ProcessInfo to not be Batch\nbut it was");
 		}
 		return myself;
@@ -134,7 +134,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotTimeout() {
 		isNotNull();
-		if (!actual.isTimeout()) {
+		if (actual.isTimeout()) {
 			failWithMessage("\nExpecting ProcessInfo to not be Timeout\nbut it was");
 		}
 		return myself;
@@ -278,7 +278,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotPrintPreview() {
 		isNotNull();
-		if (!actual.isPrintPreview()) {
+		if (actual.isPrintPreview()) {
 			failWithMessage("\nExpecting ProcessInfo to not be PrintPreview\nbut it was");
 		}
 		return myself;
@@ -294,7 +294,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotReportingProcess() {
 		isNotNull();
-		if (!actual.isReportingProcess()) {
+		if (actual.isReportingProcess()) {
 			failWithMessage("\nExpecting ProcessInfo to not be ReportingProcess\nbut it was");
 		}
 		return myself;
@@ -319,7 +319,7 @@ public abstract class AbstractProcessInfoAssert<SELF extends AbstractProcessInfo
 
 	public SELF isNotExport() {
 		isNotNull();
-		if (!actual.isExport()) {
+		if (actual.isExport()) {
 			failWithMessage("\nExpecting ProcessInfo to not be Export\nbut it was");
 		}
 		return myself;

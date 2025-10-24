@@ -27,6 +27,7 @@ import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoLog;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.util.CLogger;
+import org.compiere.util.DB;
 import org.compiere.util.Trx;
 import org.osgi.test.common.exceptions.Exceptions;
 
@@ -45,6 +46,7 @@ public class ProcessController<P extends ProcessCall> {
 	private IProcessUI mProcessUI;
 	private String mName;
 	private CLogger mLog;
+	private int[] mSelection;
 	private ProcessInfo mProcessInfo;
 	private IDempiereEnv mEnv;
 
@@ -192,8 +194,27 @@ public class ProcessController<P extends ProcessCall> {
 			mProcessInfo.setAD_PInstance_ID(mpi.get_ID());
 		}
 		mProcess.setProcessUI(mProcessUI);
+		createSelection();
 	}
 
+	private void createSelection() {
+		if (mSelection == null || mSelection.length == 0) {
+			return;
+		}
+		final StringBuilder b = new StringBuilder("INSERT INTO T_Selection(AD_PInstance_ID, ViewID, T_Selection_ID) VALUES ");
+		final String prefix = "(" + String.valueOf(mProcessInfo.getAD_PInstance_ID()) + ",null,";
+		boolean first = true;
+		for (int selection : mSelection) {
+			if (first) {
+				first = false;
+			} else {
+				b.append(',');
+			}
+			b.append(prefix).append(selection).append(')');
+		}
+		DB.executeUpdate(b.toString(), mTrxName);
+	}
+	
 	public boolean start() {
 		setupProcessInfo();
 		return mProcess.startProcess(mCtx, mProcessInfo, mTrx);
@@ -252,6 +273,15 @@ public class ProcessController<P extends ProcessCall> {
 		return this;
 	}
 
+	public ProcessController<P> withSelection(int... selection) {
+		mSelection = selection;
+		return this;
+	}
+	
+	public ProcessController<P> withSelection(IntStream selection) {
+		return withSelection(selection.toArray());
+	}
+	
 	public ProcessController<P> withRecordID(int id) {
 		mRecordID = id;
 		return this;

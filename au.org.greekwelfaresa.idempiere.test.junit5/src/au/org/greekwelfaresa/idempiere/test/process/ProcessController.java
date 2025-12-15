@@ -4,10 +4,12 @@ import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.getField;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.injectMockLog;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.invoke;
 import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.setField;
+import static au.org.greekwelfaresa.idempiere.test.common.utils.Utils.timestamp;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -123,6 +125,14 @@ public class ProcessController<P extends ProcessCall> {
 	public ProcessController<P> withProcessPO(MProcess processPO) {
 		mProcessPO = processPO;
 		return this;
+	}
+
+	public ProcessController<P> withParameterTS(String name, String parameter) {
+		return withParameter(name, timestamp(parameter));
+	}
+
+	public ProcessController<P> withParameterBD(String name, String parameter) {
+		return withParameter(name, new BigDecimal(parameter));
 	}
 
 	public ProcessController<P> withParameter(String name, Object parameter) {

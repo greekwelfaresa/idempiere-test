@@ -65,6 +65,10 @@ public class PORecorder implements EventHandler, AutoCloseable {
 	public <T extends PO> Optional<T> getFirstPO(Class<T> clazz) {
 		return getPOStream(clazz).findFirst();
 	}
+
+	public void reset() {
+		getEvents().clear();
+	}
 	
 	@Override
 	public void close() {

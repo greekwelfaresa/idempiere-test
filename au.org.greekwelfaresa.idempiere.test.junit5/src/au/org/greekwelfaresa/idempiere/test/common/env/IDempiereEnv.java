@@ -1574,6 +1574,14 @@ public class IDempiereEnv implements AutoCloseable {
 	
 	public MPriceList createPriceListSO(String suffix) {
 		if (getPriceListSO() == null) {
+			MPriceList spl = createAdditionalPriceListSO(suffix);
+			setPriceListSO(spl);
+			return spl;
+		}
+		return null;
+	}
+
+	public MPriceList createAdditionalPriceListSO(String suffix) {
 			MPriceList spl = new MPriceList(getCtx(), 0, null);
 			spl.setName("SO_During: " + getPriceListName(suffix));
 			spl.setDescription(getStepMsgLong());
@@ -1581,13 +1589,8 @@ public class IDempiereEnv implements AutoCloseable {
 			spl.setIsSOPriceList(true);
 			spl.setC_Currency_ID(getCurrency().get_ID());
 			spl.saveEx();
-			// spl.saveEx(get_TrxName());
-			setPriceListSO(spl);
-			// Ensure that we clean up afterwards.
 			registerPO(spl);
 			return spl;
-		}
-		return null;
 	}
 
 	String getPriceListName(String suffix2) {
@@ -1605,19 +1608,23 @@ public class IDempiereEnv implements AutoCloseable {
 	
 	public MPriceList createPriceListPO(String suffix) {
 		if (getPriceListPO() == null) {
-			MPriceList ppl = new MPriceList(getCtx(), 0, null);
-			ppl.setName("PO_During: " + getPriceListName(suffix));
-			ppl.setDescription(getStepMsgLong());
-			ppl.setAD_Org_ID(0);
-			ppl.setIsSOPriceList(false);
-			ppl.setC_Currency_ID(getCurrency().get_ID());
-			ppl.saveEx();
-			// ppl.saveEx(get_TrxName());
+			MPriceList ppl = createAdditionalPriceListPO(suffix);
 			setPriceListPO(ppl);
-			registerPO(ppl);
 			return ppl;
 		}
 		return null;
+	}
+
+	public MPriceList createAdditionalPriceListPO(String suffix) {
+		MPriceList ppl = new MPriceList(getCtx(), 0, null);
+		ppl.setName("PO_During: " + getPriceListName(suffix));
+		ppl.setDescription(getStepMsgLong());
+		ppl.setAD_Org_ID(0);
+		ppl.setIsSOPriceList(false);
+		ppl.setC_Currency_ID(getCurrency().get_ID());
+		ppl.saveEx();
+		registerPO(ppl);
+		return ppl;
 	}
 
 	public String createRoutingNo() {

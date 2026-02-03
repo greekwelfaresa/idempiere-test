@@ -98,6 +98,7 @@ import org.compiere.model.MUser;
 import org.compiere.model.MWarehouse;
 import org.compiere.model.MYear;
 import org.compiere.model.PO;
+import org.compiere.model.POInfo;
 import org.compiere.model.Query;
 import org.compiere.model.X_AD_Org;
 import org.compiere.model.X_AD_Process;
@@ -2626,13 +2627,17 @@ public class IDempiereEnv implements AutoCloseable {
 
 	public <T extends PO> T createPO(Class<T> type, String trxName) {
 		T retval = getPO(0, type, trxName);
-		if (retval.columnExists("Name")) {
+		POInfo info = POInfo.getPOInfo(getCtx(), retval.get_Table_ID());
+		final int nameIndex = retval.get_ColumnIndex("Name");
+		if (nameIndex >= 0 && !info.isVirtualColumn(nameIndex)) {
 			retval.set_ValueOfColumn("Name", getStepMsgNameWithHash());
 		}
-		if (retval.columnExists("Description")) {
+		final int descIndex = retval.get_ColumnIndex("Description");
+		if (descIndex >= 0 && !info.isVirtualColumn(descIndex)) {
 			retval.set_ValueOfColumn("Description", getStepMsgLong());
 		}
-		if (retval.columnExists("AD_Org_ID")) {
+		final int orgIndex = retval.get_ColumnIndex("AD_Org_ID");
+		if (orgIndex >= 0 && !info.isVirtualColumn(orgIndex)) {
 			retval.set_ValueOfColumn("AD_Org_ID", getOrg().get_ID());
 		}
 		return retval;

@@ -192,17 +192,20 @@ public class ProcessController<P extends ProcessCall> {
 		ProcessInfoParameter[] parameters = mParameters.values().stream().toArray(ProcessInfoParameter[]::new);
 		mProcessInfo.setParameter(parameters);
 
+		mProcessInfo.setAD_Client_ID(mEnv.getClient().get_ID());
+		mProcessInfo.setAD_User_ID(mEnv.getUser().get_ID());
+		// Create process instance (mainly for logging/sync purpose)
+		MPInstance mpi = new MPInstance(mCtx, 0, mTrxName);
+		mpi.set_ValueNoCheck(MPInstance.COLUMNNAME_AD_Process_ID, mProcessPO.get_ID());
+		// mpi.setAD_Process_ID(mProcessPO.get_ID());
 		if (mProcessPO != null) {
-			// Create process instance (mainly for logging/sync purpose)
-			MPInstance mpi = new MPInstance(mCtx, 0, mTrxName);
 			// Bypass role check
-			mpi.set_ValueNoCheck(MPInstance.COLUMNNAME_AD_Process_ID, mProcessPO.get_ID());
-			// mpi.setAD_Process_ID(mProcessPO.get_ID());
 			mpi.setRecord_ID(mRecordID);
-			mpi.saveEx();
-			mEnv.registerPO(mpi);
 			mProcessInfo.setAD_PInstance_ID(mpi.get_ID());
 		}
+		mpi.setAD_User_ID(mProcessInfo.getAD_User_ID());
+		mpi.saveEx();
+		mEnv.registerPO(mpi);
 		mProcess.setProcessUI(mProcessUI);
 		createSelection();
 	}

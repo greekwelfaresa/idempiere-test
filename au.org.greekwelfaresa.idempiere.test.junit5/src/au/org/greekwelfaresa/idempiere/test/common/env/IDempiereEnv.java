@@ -2115,10 +2115,6 @@ public class IDempiereEnv implements AutoCloseable {
 		if (getWarehouse() == null) {
 			appendErrorMsg("Warehouse is Null");
 		}
-		if (getProduct() == null) {
-			appendErrorMsg("Product is Null");
-		}
-		validate();
 
 		// create order header
 		MOrder order = new MOrder(getCtx(), 0, get_TrxName());
@@ -2155,6 +2151,11 @@ public class IDempiereEnv implements AutoCloseable {
 	}
 
 	public MOrderLine createOrderLine() {
+		if (getProduct() == null) {
+			appendErrorMsg("Product is Null");
+		}
+		validate();
+
 		MOrder order = getOrder();
 		// create order line
 		MOrderLine line = new MOrderLine(getCtx(), 0, get_TrxName());
@@ -3009,9 +3010,25 @@ public class IDempiereEnv implements AutoCloseable {
 		return createResourceAssignment(MResourceAssignment.class);
 	}
 
+	public MResourceAssignment createResourceAssignment(Timestamp from, Timestamp to) {
+		return createResourceAssignment(MResourceAssignment.class, from, to);
+	}
+
 	static BigDecimal SIXTY = new BigDecimal("60.0");
 
 	public <T extends MResourceAssignment> T createResourceAssignment(Class<T> type) {
+		GregorianCalendar c = new GregorianCalendar();
+		c.setTime(getDate());
+
+		int hours = getQty().intValue();
+		int minutes = getQty().remainder(BD_ONE).multiply(SIXTY).intValue();
+
+		c.add(Calendar.HOUR_OF_DAY, hours);
+		c.add(Calendar.MINUTE, minutes);
+		return createResourceAssignment(type, getDate(), new Timestamp(c.getTimeInMillis()));
+	} // create resource assignment
+
+	public <T extends MResourceAssignment> T createResourceAssignment(Class<T> type, Timestamp from, Timestamp to) {
 		validate();
 
 		// create resource type
@@ -3022,22 +3039,19 @@ public class IDempiereEnv implements AutoCloseable {
 			r = createResource();
 		}
 		ra.setS_Resource_ID(r.get_ID());
-		ra.setAssignDateFrom(getDate());
-		GregorianCalendar c = new GregorianCalendar();
-		c.setTime(getDate());
 
-		int hours = getQty().intValue();
-		int minutes = getQty().remainder(BD_ONE).multiply(SIXTY).intValue();
-
-		c.add(Calendar.HOUR_OF_DAY, hours);
-		c.add(Calendar.MINUTE, minutes);
-		ra.setAssignDateTo(new Timestamp(c.getTimeInMillis()));
-		ra.setQty(getQty());
+		long qty = (to.getTime() - from.getTime()) / 1000 / 60;
+		if (qty < 0) {
+			throw new IllegalStateException("To cannot be before from");
+		}
+		ra.setAssignDateFrom(from);
+		ra.setAssignDateTo(to);
+		ra.setQty(new BigDecimal(qty));
 		ra.saveEx();
 		setResourceAssignment(ra);
 		return ra;
-	} // create resource assignment
-
+	}
+	
 	public void createAndOpenAllFiscalYears() {
 		validate();
 

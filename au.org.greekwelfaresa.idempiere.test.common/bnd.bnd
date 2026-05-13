@@ -6,7 +6,9 @@
 	org.adempiere.base,\
 	jakarta.annotation-api,\
 	osgi.annotation,\
-	org.osgi.test.common
+	org.osgi.test.common,\
+	org.osgi.service.component.annotations,\
+	org.apache.felix.gogo.runtime
 	
 Import-Package: \
 	${compiere.importpackage},\

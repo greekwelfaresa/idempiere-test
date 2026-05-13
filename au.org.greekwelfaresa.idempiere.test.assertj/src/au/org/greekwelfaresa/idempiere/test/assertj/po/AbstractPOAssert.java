@@ -99,7 +99,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		
 		if (!actual.columnExists(columnName)) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto have column <%s>\nbut it does not", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto have column <%s>\nbut it does not", getPODescription(), columnName);
 		}
 		return myself;
 	}
@@ -108,7 +108,7 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 		isNotNull();
 		
 		if (actual.columnExists(columnName)) {
-			failWithMessage("\nExpecting PO:\n <%s>\nto not have column <%s>\nbut it does", getPODescription());
+			failWithMessage("\nExpecting PO:\n <%s>\nto not have column <%s>\nbut it does", getPODescription(), columnName);
 		}
 		return myself;
 	}
@@ -116,6 +116,9 @@ public abstract class AbstractPOAssert<SELF extends AbstractPOAssert<SELF, ACTUA
 	public SELF hasValue(String columnName, Object expected) {
 		isNotNull();
 		
+		if (!actual.columnExists(columnName)) {
+			failWithMessage("\nExpecting PO:\n <%s>\nto have column <%s>\nbut it does not", getPODescription(), columnName);
+		}
 		Object actualColumn = actual.get_Value(columnName);
 		if (!Objects.equals(expected, actualColumn)) {
 			failWithActualExpectedAndMessage(actualColumn, expected, "\nExpecting PO:\n  <%s>\ncolumn <%s>\nto have value\n <%s>\nbut it was\n <%s>", getPODescription(), columnName, expected, actualColumn);

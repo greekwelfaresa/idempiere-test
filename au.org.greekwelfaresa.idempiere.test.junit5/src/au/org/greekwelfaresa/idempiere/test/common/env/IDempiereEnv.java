@@ -441,6 +441,10 @@ public class IDempiereEnv implements AutoCloseable {
 		return (T) query(clazz, where, parameters).firstOnly();
 	}
 
+	public int executeUpdate(String sql, Object... params) {
+		return DB.executeUpdateEx(sql, params, get_TrxName());
+	}
+	
 	public ResultSet runQuery(String sql, Object... params) throws SQLException {
 		PreparedStatement st = DB.prepareStatement(sql, get_TrxName());
 		toBeClosed.add(new WeakReference<>(st));

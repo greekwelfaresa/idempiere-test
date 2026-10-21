@@ -22,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
-import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -79,7 +78,7 @@ public class IDempiereEnvExtension
 		}
 	}
 
-	private static class CloseableEnv implements CloseableResource {
+	private static class CloseableEnv implements AutoCloseable {
 
 		private final IDempiereEnv env;
 
